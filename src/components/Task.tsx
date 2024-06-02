@@ -6,6 +6,7 @@ interface TaskProps {
   task: {
     title: string;
     completed: boolean;
+    date: string;
   };
   index: number;
   completeTask: (index: number) => void;
