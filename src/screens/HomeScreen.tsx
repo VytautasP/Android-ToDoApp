@@ -106,26 +106,28 @@ const HomeScreen: React.FC = () => {
           value={task}
           onChangeText={setTask}
         />
+      </View>
+      <View style={styles.dateTimeContainer}>
         <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
           <Text style={styles.dateButtonText}>{date.toDateString()}</Text>
         </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                setDate(selectedDate);
+              }
+            }}
+          />
+        )}
       </View>
       <TouchableOpacity style={styles.addButton} onPress={addTask}>
         <Text style={styles.addButtonText}>Add</Text>
       </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) {
-              setDate(selectedDate);
-            }
-          }}
-        />
-      )}
     </View>
   );
 };
@@ -153,10 +155,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
+  dateTimeContainer: {
+    marginBottom: 10,
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10, // Add spacing between input container and Add button
+    marginBottom: 10,
   },
   input: {
     flex: 1,
@@ -172,7 +177,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#ddd',
     borderRadius: 5,
-    marginLeft: 10,
   },
   dateButtonText: {
     fontSize: 18,
@@ -184,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20, // Add margin at the bottom to separate from the bottom edge
+    marginBottom: 20, 
   },
   addButtonText: {
     color: 'white',
