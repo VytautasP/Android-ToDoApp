@@ -109,10 +109,10 @@ const HomeScreen: React.FC = () => {
         <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
           <Text style={styles.dateButtonText}>{date.toDateString()}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={addTask}>
-          <Text style={styles.addButtonText}>Add</Text>
-        </TouchableOpacity>
       </View>
+      <TouchableOpacity style={styles.addButton} onPress={addTask}>
+        <Text style={styles.addButtonText}>Add</Text>
+      </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -134,33 +134,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
+    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily: 'Roboto-BlackItalic'
+    color: '#333',
+    fontFamily: 'YourNewFont',
   },
   scrollView: {
     flex: 1,
     marginBottom: 20,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
   dateHeader: {
     fontSize: 24,
     fontWeight: 'bold',
     marginVertical: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10, // Add spacing between input container and Add button
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    fontSize: 18,
   },
   dateButton: {
     padding: 10,
@@ -173,14 +179,17 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   addButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#6200ee',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20, // Add margin at the bottom to separate from the bottom edge
   },
   addButtonText: {
     color: 'white',
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
