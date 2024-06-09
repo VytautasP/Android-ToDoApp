@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateDateGrid } from '../utils/utils';
+import { format } from 'date-fns';
+
 
 interface TaskType {
   title: string;
@@ -24,38 +27,58 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 
 const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
+  const [dateGrid, setDateGrid] = useState(generateDateGrid());
 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
       const loadedCompletedTasks = await loadCompletedTasks();
       setCompletedTasks(loadedCompletedTasks);
+
+      // Map tasks to the date grid
+      const taskCountMap: { [key: string]: number } = {};
+      loadedCompletedTasks.forEach(task => {
+         
+        var formattedDate = format(new Date(task.date), 'yyyy-MM-dd');
+        //console.log(formattedDate);
+        
+        if (!taskCountMap[formattedDate]) {
+          taskCountMap[formattedDate] = 0;
+        }
+        taskCountMap[formattedDate] += 1;
+      });
+
+      //console.log(taskCountMap);
+
+      const updatedDateGrid = generateDateGrid().map(day => ({
+        ...day,
+        count: taskCountMap[day.date] || 0,
+      }));
+
+      setDateGrid(updatedDateGrid);
+      //console.log(updatedDateGrid);
     };
 
     fetchCompletedTasks();
   }, []);
 
-  const groupedTasks = completedTasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
-    (acc[task.date] = acc[task.date] || []).push(task);
-    return acc;
-  }, {});
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Completed Tasks History</Text>
-      <ScrollView style={styles.scrollView}>
-        {Object.keys(groupedTasks).map((date) => (
-          <View key={date}>
-            <Text style={styles.dateHeader}>{date}</Text>
-            {groupedTasks[date].map((task, index) => (
-              <View key={index} style={styles.taskContainer}>
-                <Text style={styles.taskText}>{task.title}</Text>
-              </View>
-            ))}
-          </View>
+      <ScrollView contentContainerStyle={styles.gridContainer}>
+        {dateGrid.map((day, index) => (
+          <View key={index} style={[styles.day, { backgroundColor: getColor(day.count) }]} />
         ))}
       </ScrollView>
     </View>
   );
+};
+
+const getColor = (count: number) => {
+  if (count > 4) return '#216e39'; // Darkest color
+  if (count > 3) return '#30a14e';
+  if (count > 2) return '#40c463';
+  if (count > 1) return '#9be9a8';
+  return '#ebedf0'; // Lightest color
 };
 
 const styles = StyleSheet.create({
@@ -70,32 +93,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#333',
-    fontFamily: 'YourNewFont',
   },
-  scrollView: {
-    flex: 1,
-    marginBottom: 20,
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
-  dateHeader: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  taskContainer: {
-    padding: 15,
-    margin: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  taskText: {
-    fontSize: 18,
-    color: '#333',
-    fontFamily: 'Roboto',
+  day: {
+    width: 15,
+    height: 15,
+    margin: 2,
   },
 });
 
