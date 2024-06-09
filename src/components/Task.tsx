@@ -1,4 +1,3 @@
-// src/components/Task.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -6,27 +5,20 @@ interface TaskProps {
   task: {
     title: string;
     completed: boolean;
-    date: string;
   };
   index: number;
   completeTask: (index: number) => void;
-  deleteTask: (index: number) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, index, completeTask, deleteTask }) => {
+const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
   return (
     <View style={styles.taskContainer}>
       <Text style={task.completed ? styles.taskTextCompleted : styles.taskText}>
         {task.title}
       </Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity onPress={() => completeTask(index)}>
-          <Text style={styles.completeButton}>✔</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteTask(index)}>
-          <Text style={styles.deleteButton}>✘</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={() => completeTask(index)}>
+        <Text style={styles.completeButton}>✔</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -35,31 +27,31 @@ const styles = StyleSheet.create({
   taskContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 15,
     margin: 10,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   taskText: {
     fontSize: 18,
-    fontFamily: 'Roboto-BlackItalic'
+    color: '#333',
+    fontFamily: 'Roboto',
   },
   taskTextCompleted: {
     fontSize: 18,
     textDecorationLine: 'line-through',
     color: 'gray',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
+    fontFamily: 'Roboto',
   },
   completeButton: {
     fontSize: 18,
     color: 'green',
-    marginRight: 10,
-  },
-  deleteButton: {
-    fontSize: 18,
-    color: 'red',
   },
 });
 
