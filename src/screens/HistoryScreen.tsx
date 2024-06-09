@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateDateGridForMonth, getPreviousMonth, getNextMonth } from '../utils/utils';
 import { format } from 'date-fns';
-import { generateDateGridForMonth, getNextMonth, getPreviousMonth } from '../utils/utils';
 
 interface TaskType {
   title: string;
@@ -38,7 +38,7 @@ const HistoryScreen: React.FC = () => {
       const taskCountMap: { [key: string]: number } = {};
       loadedCompletedTasks.forEach(task => {
 
-        var formattedDate = format(new Date(task.date), 'yyyy-MM-dd');
+        let formattedDate = format(new Date(task.date), 'yyyy-MM-dd');
 
         if (!taskCountMap[formattedDate]) {
           taskCountMap[formattedDate] = 0;
@@ -52,6 +52,7 @@ const HistoryScreen: React.FC = () => {
       }));
 
       setDateGrid(updatedDateGrid);
+      console.log(updatedDateGrid)
     };
 
     fetchCompletedTasks();
@@ -65,6 +66,9 @@ const HistoryScreen: React.FC = () => {
     setCurrentMonth(getNextMonth(currentMonth));
   };
 
+
+  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Completed Tasks History</Text>
@@ -77,9 +81,18 @@ const HistoryScreen: React.FC = () => {
           <Text style={styles.navButton}>Next</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.weekDaysContainer}>
+        {weekDays.map((day, index) => (
+          <Text key={index} style={styles.weekDay}>
+            {day}
+          </Text>
+        ))}
+      </View>
       <ScrollView contentContainerStyle={styles.gridContainer}>
         {dateGrid.map((day, index) => (
-          <View key={index} style={[styles.day, { backgroundColor: getColor(day.count) }]} />
+          <View key={index} style={[styles.day, { backgroundColor: day.date ? getColor(day.count) : 'transparent' }]}>
+            <Text style={styles.dayText}>{day.date ? format(new Date(day.date), 'd') : ''}</Text>
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -121,14 +134,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  weekDaysContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  weekDay: {
+    width: 30,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between', // Ensure rows contain 7 items
   },
   day: {
-    width: 15,
-    height: 15,
-    margin: 2,
+    width: 30,
+    height: 30,
+    margin: 8, // Adjust margin to fit 7 items per row
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayText: {
+    fontSize: 12,
   },
 });
 
