@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { generateDateGrid } from '../utils/utils';
 import { format } from 'date-fns';
-
+import { generateDateGridForMonth, getNextMonth, getPreviousMonth } from '../utils/utils';
 
 interface TaskType {
   title: string;
@@ -27,7 +26,8 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 
 const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
-  const [dateGrid, setDateGrid] = useState(generateDateGrid());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [dateGrid, setDateGrid] = useState(generateDateGridForMonth(new Date()));
 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
@@ -37,33 +37,46 @@ const HistoryScreen: React.FC = () => {
       // Map tasks to the date grid
       const taskCountMap: { [key: string]: number } = {};
       loadedCompletedTasks.forEach(task => {
-         
+
         var formattedDate = format(new Date(task.date), 'yyyy-MM-dd');
-        //console.log(formattedDate);
-        
+
         if (!taskCountMap[formattedDate]) {
           taskCountMap[formattedDate] = 0;
         }
         taskCountMap[formattedDate] += 1;
       });
 
-      //console.log(taskCountMap);
-
-      const updatedDateGrid = generateDateGrid().map(day => ({
+      const updatedDateGrid = generateDateGridForMonth(currentMonth).map(day => ({
         ...day,
         count: taskCountMap[day.date] || 0,
       }));
 
       setDateGrid(updatedDateGrid);
-      //console.log(updatedDateGrid);
     };
 
     fetchCompletedTasks();
-  }, []);
+  }, [currentMonth]);
+
+  const handlePreviousMonth = () => {
+    setCurrentMonth(getPreviousMonth(currentMonth));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(getNextMonth(currentMonth));
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Completed Tasks History</Text>
+      <View style={styles.navigationContainer}>
+        <TouchableOpacity onPress={handlePreviousMonth}>
+          <Text style={styles.navButton}>Previous</Text>
+        </TouchableOpacity>
+        <Text style={styles.monthLabel}>{format(currentMonth, 'MMMM yyyy')}</Text>
+        <TouchableOpacity onPress={handleNextMonth}>
+          <Text style={styles.navButton}>Next</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={styles.gridContainer}>
         {dateGrid.map((day, index) => (
           <View key={index} style={[styles.day, { backgroundColor: getColor(day.count) }]} />
@@ -93,6 +106,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     color: '#333',
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  navButton: {
+    fontSize: 18,
+    color: '#6200ee',
+  },
+  monthLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   gridContainer: {
     flexDirection: 'row',
