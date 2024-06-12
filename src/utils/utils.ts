@@ -11,26 +11,38 @@ export const generateDateGridForMonth = (month: Date) => {
   
     // Determine the day of the week the month starts on (0 = Sunday, 1 = Monday, etc.)
     const startDay = getDay(monthDt);
+    const endDay = getDay(endDate);
     console.log(monthDt);
     console.log(startDate);
     console.log(startDay);
     console.log(endDate);
+    console.log(endDay);
 
-    const paddingDays = [];
+    const prefixPaddingDays = [];
+    const suffixPaddingDays = [];
     
     // Calculate padding to start the month on the correct weekday column (Monday)
-    const paddingCount = (startDay === 0 ? 6 : startDay - 1); // Shift Sunday (0) to the end
+    const prefixPaddingCount = (startDay === 0 ? 6 : startDay - 1); // Shift Sunday (0) to the end
   
-    for (let i = 0; i < paddingCount; i++) {
-      paddingDays.push({ date: '', count: 0 });
+    // Calculate padding to start the month on the correct weekday column (Monday)
+    const suffixPaddingCount = (endDay === 0 ? 6 : 7 - endDay); // Shift Sunday (0) to the end
+
+    for (let i = 0; i < prefixPaddingCount; i++) {
+      prefixPaddingDays.push({ date: '', count: 0 });
+    }
+
+    for (let i = 0; i < suffixPaddingCount; i++) {
+      suffixPaddingDays.push({ date: '', count: 0 });
     }
   
-    return paddingDays.concat(
+    const result = prefixPaddingDays.concat(
       daysInMonth.map(date => ({
         date: format(date, 'yyyy-MM-dd'),
         count: 0,
       }))
-    );
+    ).concat(suffixPaddingDays);
+
+    return result;
   };
 
 export const getPreviousMonth = (month: Date) => subMonths(month, 1);
