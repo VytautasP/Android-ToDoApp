@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateDateGridForMonth, getPreviousMonth, getNextMonth } from '../utils/utils';
 import { format } from 'date-fns';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 interface TaskType {
   title: string;
@@ -52,7 +54,6 @@ const HistoryScreen: React.FC = () => {
       }));
 
       setDateGrid(updatedDateGrid);
-      console.log(updatedDateGrid)
     };
 
     fetchCompletedTasks();
@@ -74,11 +75,11 @@ const HistoryScreen: React.FC = () => {
       <Text style={styles.title}>Completed Tasks History</Text>
       <View style={styles.navigationContainer}>
         <TouchableOpacity onPress={handlePreviousMonth}>
-          <Text style={styles.navButton}>Previous</Text>
+          <SimpleLineIcon name="arrow-left-circle" size={30} color="#6200ee" />
         </TouchableOpacity>
         <Text style={styles.monthLabel}>{format(currentMonth, 'MMMM yyyy')}</Text>
         <TouchableOpacity onPress={handleNextMonth}>
-          <Text style={styles.navButton}>Next</Text>
+          <SimpleLineIcon name="arrow-right-circle" size={30} color="#6200ee" />
         </TouchableOpacity>
       </View>
       <View style={styles.weekDaysContainer}>
@@ -126,10 +127,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  navButton: {
-    fontSize: 18,
-    color: '#6200ee',
-  },
   monthLabel: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -152,7 +149,7 @@ const styles = StyleSheet.create({
   day: {
     width: 30,
     height: 30,
-    margin: 8, // Adjust margin to fit 7 items per row
+    margin: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
