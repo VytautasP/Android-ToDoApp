@@ -41,13 +41,13 @@ const styles = StyleSheet.create({
   taskText: {
     fontSize: 18,
     color: '#333',
-    fontFamily: 'Roboto',
+    fontFamily: 'Kalam-Regular',
   },
   taskTextCompleted: {
     fontSize: 18,
     textDecorationLine: 'line-through',
     color: 'gray',
-    fontFamily: 'Roboto',
+    fontFamily: 'Kalam-Regular',
   },
   completeButton: {
     fontSize: 18,
