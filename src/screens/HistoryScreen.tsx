@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateDateGridForMonth, getPreviousMonth, getNextMonth } from '../utils/utils';
 import { format } from 'date-fns';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 interface TaskType {
