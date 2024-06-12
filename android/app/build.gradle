@@ -115,10 +115,11 @@ dependencies {
     }
 }
 
-project.ext.vectoricons = [
-    iconFontNames: [ 'Roboto-Light.ttf', 'Roboto-BlackItalic.ttf' ]
-]
+//project.ext.vectoricons = [
+//    iconFontNames: [ 'Roboto-Light.ttf', 'Roboto-BlackItalic.ttf', 'MaterialIcons.ttf' ]
+//]
 
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle");
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
 
