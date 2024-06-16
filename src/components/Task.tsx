@@ -41,13 +41,13 @@ const styles = StyleSheet.create({
   taskText: {
     fontSize: 18,
     color: '#333',
-    fontFamily: 'Kalam-Regular',
+    //fontFamily: 'Kalam-Regular'
   },
   taskTextCompleted: {
     fontSize: 18,
     textDecorationLine: 'line-through',
     color: 'gray',
-    fontFamily: 'Kalam-Regular',
+    //fontFamily: 'Kalam-Regular',
   },
   completeButton: {
     fontSize: 18,

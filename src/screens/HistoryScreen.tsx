@@ -26,14 +26,15 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 };
 
 const HistoryScreen: React.FC = () => {
-  const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
+
+  //const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [dateGrid, setDateGrid] = useState(generateDateGridForMonth(new Date()));
 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
       const loadedCompletedTasks = await loadCompletedTasks();
-      setCompletedTasks(loadedCompletedTasks);
+     // setCompletedTasks(loadedCompletedTasks);
 
       // Map tasks to the date grid
       const taskCountMap: { [key: string]: number } = {};
@@ -74,11 +75,11 @@ const HistoryScreen: React.FC = () => {
       <Text style={styles.title}>Completed Tasks History</Text>
       <View style={styles.navigationContainer}>
         <TouchableOpacity onPress={handlePreviousMonth}>
-          <SimpleLineIcon name="arrow-left-circle" size={30} color="#6200ee" />
+          <SimpleLineIcon name="arrow-left-circle" size={30} color="#000000" />
         </TouchableOpacity>
         <Text style={styles.monthLabel}>{format(currentMonth, 'MMMM yyyy')}</Text>
         <TouchableOpacity onPress={handleNextMonth}>
-          <SimpleLineIcon name="arrow-right-circle" size={30} color="#6200ee" />
+          <SimpleLineIcon name="arrow-right-circle" size={30} color="#000000" />
         </TouchableOpacity>
       </View>
       <View style={styles.weekDaysContainer}>
