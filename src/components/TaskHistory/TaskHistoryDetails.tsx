@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, StyleSheet} from 'react-native';
 
 interface ModalBoxProps {
   modalVisible: boolean;
@@ -16,31 +16,35 @@ const TaskHistoryDetails: React.FC<ModalBoxProps> = ({
 }) => {
   return (
     <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible);
-      }}
+    animationType="slide"
+    transparent={true}
+    visible={modalVisible}
+    onRequestClose={() => {
+      setModalVisible(!modalVisible);
+    }}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Tasks for {selectedDate}</Text>
-          {tasksForSelectedDate.length > 0 ? (
-            tasksForSelectedDate.map((task, index) => (
-              <Text key={index} style={styles.taskText}>{task.title}</Text>
-            ))
-          ) : (
-            <Text style={styles.taskText}>No tasks completed on this day.</Text>
-          )}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={() => {setModalVisible(false)}}>
+        <View style={styles.modalContainer}>
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Tasks for {selectedDate}</Text>
+              {tasksForSelectedDate.length > 0 ? (
+                tasksForSelectedDate.map((task, index) => (
+                  <Text key={index} style={styles.taskText}>{task.title}</Text>
+                ))
+              ) : (
+                <Text style={styles.taskText}>No tasks completed on this day.</Text>
+              )}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+            </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
