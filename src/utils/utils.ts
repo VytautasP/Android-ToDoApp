@@ -12,11 +12,6 @@ export const generateDateGridForMonth = (month: Date) => {
     // Determine the day of the week the month starts on (0 = Sunday, 1 = Monday, etc.)
     const startDay = getDay(monthDt);
     const endDay = getDay(endDate);
-    console.log(monthDt);
-    console.log(startDate);
-    console.log(startDay);
-    console.log(endDate);
-    console.log(endDay);
 
     const prefixPaddingDays = [];
     const suffixPaddingDays = [];
