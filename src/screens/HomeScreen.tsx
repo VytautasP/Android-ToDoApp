@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Task from '../components/Task';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
+import { format } from 'date-fns';
 
 interface TaskType {
   title: string;
@@ -58,7 +59,7 @@ const HomeScreen: React.FC = () => {
 
   const addTask = () => {
     if (task.length > 0) {
-      const newTask = { title: task, completed: false, date: date.toDateString() };
+      const newTask = { title: task, completed: false, date: format(date, "yyyy-MM-dd") };
       const newTasks = [...tasks, newTask];
       setTasks(newTasks);
       saveTasks(TASKS_STORAGE_KEY, newTasks);
