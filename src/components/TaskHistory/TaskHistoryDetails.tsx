@@ -30,7 +30,7 @@ const TaskHistoryDetails: React.FC<ModalBoxProps> = ({
               <Text style={styles.modalTitle}>Tasks for {selectedDate}</Text>
               {tasksForSelectedDate.length > 0 ? (
                 tasksForSelectedDate.map((task, index) => (
-                  <Text key={index} style={styles.taskText}>{task.title}</Text>
+                  <Text key={index} style={styles.taskText}>{task.title}  <Text style={styles.completeButton}>✔</Text></Text>
                 ))
               ) : (
                 <Text style={styles.taskText}>No tasks completed on this day.</Text>
@@ -82,6 +82,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  completeButton: {
+    fontSize: 18,
+    color: 'green',
+  }
 });
 
 export default TaskHistoryDetails;
