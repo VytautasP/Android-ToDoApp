@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Task from '../components/Task';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import { format } from 'date-fns';
+import { TaskType } from '../models/task';
+import TaskList from '../components/TaskList/TaskList';
+import TouchableButton from '../components/button/TouchableButton';
 
-interface TaskType {
-  title: string;
-  completed: boolean;
-  date: string;
-}
 
 const TASKS_STORAGE_KEY = '@tasks';
 const COMPLETED_TASKS_STORAGE_KEY = '@completedTasks';
@@ -81,29 +78,9 @@ const HomeScreen: React.FC = () => {
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
   };
 
-  const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
-    (acc[task.date] = acc[task.date] || []).push(task);
-    return acc;
-  }, {});
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>To-Do List</Text>
-      <ScrollView style={styles.scrollView}>
-        {Object.keys(groupedTasks).map((date) => (
-          <View key={date}>
-            <Text style={styles.dateHeader}>{date}</Text>
-            {groupedTasks[date].map((task, index) => (
-              <Task
-                key={index}
-                task={task}
-                index={index}
-                completeTask={completeTask}
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+      <TaskList tasks={tasks} completeTask={completeTask} />
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -130,12 +107,10 @@ const HomeScreen: React.FC = () => {
           />
         )}
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={addTask}>
-        <Text style={styles.addButtonText}>Add</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('History')}>
-        <Text style={styles.historyButtonText}>View History</Text>
-      </TouchableOpacity>
+      <View>
+        <TouchableButton text="Add" onClick={addTask} />
+        <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
+      </View>
     </View>
   );
 };
@@ -186,31 +161,6 @@ const styles = StyleSheet.create({
   dateButtonText: {
     fontSize: 18,
     color: '#333',
-  },
-  addButton: {
-    backgroundColor: '#6200ee',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  historyButton: {
-    marginTop: 10,
-    backgroundColor: '#6200ee',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  historyButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
   }
 });
 
