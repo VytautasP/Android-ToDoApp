@@ -4,12 +4,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/screens/HomeScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import { RootStackParamList } from './src/navigation/types';
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import Icon  from 'react-native-vector-icons/MaterialIcons';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
