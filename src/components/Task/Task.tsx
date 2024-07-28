@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform  } from 'react-native';
-import { Notifications } from 'react-native-notifications';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface TaskProps {
   task: {
@@ -11,25 +10,6 @@ interface TaskProps {
   completeTask: (index: number) => void;
 }
 
-
-
-const scheduleReminder = async (taskTitle: string) => {
-  
-  Notifications.postLocalNotification(
-    {
-      identifier: "reminder",
-      payload: "Task Reminder",
-      title: "Task Reminder",
-      body: "Don't forget to complete your task: ",
-      sound: "default",
-      badge: 1,
-      type: "reminder",
-      thread: "reminder",
-    },
-   1);
-
-};
-
 const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
   return (
     <View style={styles.taskContainer}>
@@ -38,9 +18,6 @@ const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
       </Text>
       <TouchableOpacity onPress={() => completeTask(index)}>
         <Text style={styles.completeButton}>✔</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => scheduleReminder(task.title)} style={styles.reminderButton}>
-          <Text style={styles.reminderButtonText}>Add Reminder</Text>
       </TouchableOpacity>
     </View>
   );
@@ -75,15 +52,6 @@ const styles = StyleSheet.create({
   completeButton: {
     fontSize: 18,
     color: 'green',
-  },
-  reminderButton: {
-    padding: 5,
-    backgroundColor: '#6200ee',
-    borderRadius: 5,
-  },
-  reminderButtonText: {
-    color: 'white',
-    fontSize: 12,
   },
 });
 
