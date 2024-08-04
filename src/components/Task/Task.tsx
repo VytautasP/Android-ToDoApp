@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 interface TaskProps {
   task: {
@@ -10,6 +11,70 @@ interface TaskProps {
   completeTask: (index: number) => void;
 }
 
+
+const scheduleReminder = async (taskTitle: string) => {
+
+   // Request permissions (required for iOS)
+   await notifee.requestPermission()
+
+   // Create a channel (required for Android)
+   const channelId = await notifee.createChannel({
+     id: 'default',
+     name: 'Default Channel',
+   });
+
+   // Display a notification
+   await notifee.displayNotification({
+     title: 'ToDo Task Reminder',
+     body: taskTitle,
+     android: {
+       channelId,
+       smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
+       color: '#808000',
+       // pressAction is needed if you want the notification to open the app when pressed
+       pressAction: {
+         id: 'default',
+       },
+     },
+   });
+
+};
+
+const scheduleReminderWithTrigger = async (taskTitle: string) => {
+
+  await notifee.requestPermission()
+
+  const date = new Date(Date.now());
+  date.setMinutes(date.getMinutes() + 2);
+
+    // Create a time-based trigger
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: date.getTime(),
+    };
+
+    // Create a channel (required for Android)
+   const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+  });
+
+    // Create a trigger notification
+    await notifee.createTriggerNotification(
+      {
+        title: 'ToDo Task Reminder',
+        body: taskTitle,
+        android: {
+          channelId: channelId,
+          smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
+          color: '#808000',
+        },
+      },
+      trigger,
+    );
+
+}
+
 const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
   return (
     <View style={styles.taskContainer}>
@@ -18,6 +83,9 @@ const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
       </Text>
       <TouchableOpacity onPress={() => completeTask(index)}>
         <Text style={styles.completeButton}>✔</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => scheduleReminderWithTrigger(task.title)} style={styles.reminderButton}>
+          <Text style={styles.reminderButtonText}>Add Reminder</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,6 +120,15 @@ const styles = StyleSheet.create({
   completeButton: {
     fontSize: 18,
     color: 'green',
+  },
+  reminderButton: {
+    padding: 5,
+    backgroundColor: '#6200ee',
+    borderRadius: 5,
+  },
+  reminderButtonText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 
