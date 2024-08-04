@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   day: {
     width: 30,
     height: 30,
-    margin: 7, // Adjust margin to fit 7 items per row
+    margin: 8, // Adjust margin to fit 7 items per row
     alignItems: 'center',
     justifyContent: 'center',
   },
