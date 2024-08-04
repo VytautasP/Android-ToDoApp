@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 interface TaskProps {
@@ -84,13 +85,13 @@ const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
       {/* Action Bar Area */}
       <View style={styles.actionBarArea}>
         <TouchableOpacity onPress={() => completeTask(index)} style={styles.actionButton}>
-          <Text style={styles.completeButton}>✔</Text>
+          <Icon name="check-circle" size={20} color="green" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => scheduleReminderWithTrigger(task.title)}
-          style={styles.reminderButton}
+          style={styles.actionButton}
         >
-          <Text style={styles.reminderButtonText}>Add Reminder</Text>
+          <Icon name="notifications" size={20} color="#6200ee" />
         </TouchableOpacity>
       </View>
 
@@ -117,9 +118,9 @@ const styles = StyleSheet.create({
   },
   actionBarArea: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 10,
+    padding: 4,
     backgroundColor: '#e0e0e0',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -143,19 +144,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginHorizontal: 5,
-  },
-  completeButton: {
-    fontSize: 18,
-    color: 'green',
-  },
-  reminderButton: {
-    padding: 5,
-    backgroundColor: '#6200ee',
-    borderRadius: 5,
-  },
-  reminderButtonText: {
-    color: 'white',
-    fontSize: 12,
   },
 });
 
