@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -40,6 +40,7 @@ const HomeScreen: React.FC = () => {
   const [task, setTask] = useState('');
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
@@ -82,9 +83,45 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <TaskList tasks={tasks} completeTask={completeTask} />
       <View>
-        <TouchableButton text="Add" onClick={addTask} />
+        <TouchableButton text="Add" onClick={() => setModalVisible(true)} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
       </View>
+
+      {/* Modal for adding task */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <TextInput style={styles.input} placeholder="Task Description" value={task} onChangeText={setTask} />
+
+            <View style={styles.dateTimeContainer}>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+                <Text style={styles.dateButtonText}>Select Date: {format(date, 'yyyy-MM-dd')}</Text>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      setDate(selectedDate);
+                    }
+                  }}
+                />
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };
@@ -135,7 +172,26 @@ const styles = StyleSheet.create({
   dateButtonText: {
     fontSize: 18,
     color: '#333',
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Darken background
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
 });
 
 export default HomeScreen;
