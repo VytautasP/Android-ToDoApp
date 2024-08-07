@@ -81,32 +81,6 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <TaskList tasks={tasks} completeTask={completeTask} />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add a new task"
-          value={task}
-          onChangeText={setTask}
-        />
-      </View>
-      <View style={styles.dateTimeContainer}>
-        <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.dateButtonText}>{date.toDateString()}</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                setDate(selectedDate);
-              }
-            }}
-          />
-        )}
-      </View>
       <View>
         <TouchableButton text="Add" onClick={addTask} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
