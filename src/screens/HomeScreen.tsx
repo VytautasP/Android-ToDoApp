@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
 import TouchableButton from '../components/button/TouchableButton';
+import DatePicker from 'react-native-date-picker';
 
 
 const TASKS_STORAGE_KEY = '@tasks';
@@ -109,17 +110,8 @@ const HomeScreen: React.FC = () => {
                   width: '98%',
                 }} />
 
-              <View style={styles.section}>
-                <View style={styles.dateTimeContainer}>
-                  <TextInput
-                    style={styles.dateInput}
-                    placeholder="Select Date"
-                    value={format(date, 'yyyy-MM-dd')}
-                    editable={false}
-                  />
-                </View>
-              </View>
-
+              <DatePicker date={date} mode="date" onDateChange={setDate} dividerColor='#c6c6c6'/>     
+              
               <View style={styles.section}>
                 <TextInput
                   multiline={true}
@@ -129,8 +121,6 @@ const HomeScreen: React.FC = () => {
                   onChangeText={setTask}
                 />
               </View>
-
-
 
               <View style={styles.buttonContainer}>
                 <TouchableButton
