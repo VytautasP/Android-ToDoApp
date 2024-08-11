@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TouchableWithoutFeedback, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -96,30 +96,59 @@ const HomeScreen: React.FC = () => {
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <TextInput style={styles.input} placeholder="Task Description" value={task} onChangeText={setTask} />
+        <TouchableWithoutFeedback onPress={() => { setModalVisible(false) }}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle}>Task Description</Text>
 
-            <View style={styles.dateTimeContainer}>
-              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-                <Text style={styles.dateButtonText}>Select Date: {format(date, 'yyyy-MM-dd')}</Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      setDate(selectedDate);
-                    }
-                  }}
+              {/* Line */}
+              <View
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  width: '98%',
+                }} />
+
+              <View style={styles.section}>
+                <View style={styles.dateTimeContainer}>
+                  <TextInput
+                    style={styles.dateInput}
+                    placeholder="Select Date"
+                    value={format(date, 'yyyy-MM-dd')}
+                    editable={false}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.section}>
+                <TextInput
+                  multiline={true}
+                  style={styles.input}
+                  placeholder="Enter your task here..."
+                  value={task}
+                  onChangeText={setTask}
                 />
-              )}
+              </View>
+
+
+
+              <View style={styles.buttonContainer}>
+                <TouchableButton
+                  buttonStyle={styles.modalButton}
+                  buttonTextStyle={styles.modalButtonText}
+                  text='OK'
+                  onClick={addTask} />
+
+                <TouchableButton
+                  buttonStyle={styles.modalButton}
+                  buttonTextStyle={styles.modalButtonText}
+                  text='Cancel'
+                  onClick={() => setModalVisible(false)}
+                />
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
 
     </View>
@@ -132,47 +161,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-    fontFamily: 'YourNewFont',
-  },
-  scrollView: {
-    flex: 1,
-    marginBottom: 20,
-  },
-  dateHeader: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  inputContainer: {
-    marginBottom: 10,
-  },
-  input: {
-    height: 60, 
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 15,
-    backgroundColor: '#fff',
-    fontSize: 20, 
-  },
-  dateTimeContainer: {
-    marginBottom: 10, 
-  },
-  dateButton: {
-    padding: 10,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-  },
-  dateButtonText: {
-    fontSize: 18,
-    color: '#333',
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -180,17 +168,92 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Darken background
   },
   modalView: {
-    width: 300,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
+    width: '90%', // Responsive width
+    maxWidth: 400, // Maximum width
+    backgroundColor: '#fff', // White background
+    borderRadius: 12, // Rounded corners
+    paddingVertical: 30, // Padding
+    paddingHorizontal: 20,
     alignItems: 'center',
-    elevation: 5,
+    elevation: 10, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#333', // Text color
+    textAlign: 'center',
+  },
+  section: {
+    width: '100%',
+    //padding: 20,
+    marginBottom: 15, // Space between sections
+  },
+  input: {
+    height: 100,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10, // Rounded corners for input fields
+    paddingHorizontal: 15,
+    backgroundColor: '#fff', // White background for inputs
+    fontSize: 16, // Consistent font size
+    textAlignVertical: 'top', // Aligns text to the top of the TextInput
+    //marginBottom: 10, // Space below input
+  },
+  dateTimeContainer: {
+    marginTop: 15,
+    flexDirection: 'row', // Align date and CVV fields
+    justifyContent: 'center',//'space-between',
+    width: '100%',
+  },
+  dateInput: {
+    //flex: 1, // Flex to take available space
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10, // Rounded corners
+    paddingHorizontal: 15,
+    backgroundColor: '#fff', // White background
+    fontSize: 16,
+    marginRight: 10, // Margin between date and CVV
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 10,
+    //borderRadius: 12, // Rounded corners for buttons
+    //borderWidth: 2,
+    //borderColor: '#007bff', // Blue theme color
+    marginHorizontal: 5,
+    alignItems: 'center',
+    height: 45
+  },
+  modalButtonText: {
+    fontSize: 14,
+    //color: '#007bff', // Blue text
+    fontWeight: 'bold',
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    width: '100%',
+  },
+  toggleText: {
+    fontSize: 16,
+    color: '#333', // Dark text color
+  },
+  toggleSwitch: {
+    marginLeft: 'auto',
   },
 });
 
