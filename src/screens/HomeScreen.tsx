@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, Modal, TouchableWithoutFeedback, Switch } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
 import { format, set } from 'date-fns';
@@ -76,11 +75,6 @@ const HomeScreen: React.FC = () => {
     } else {
       Alert.alert('Task cannot be empty');
     }
-  }
-
-  const onCancelTask = () => {
-    setModalVisible(false);
-    console.log(modalVisible)
   }
 
   return (
