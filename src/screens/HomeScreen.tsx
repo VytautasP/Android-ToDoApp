@@ -3,7 +3,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
 import TouchableButton from '../components/button/TouchableButton';
@@ -65,16 +65,21 @@ const HomeScreen: React.FC = () => {
   };
 
   const onAddTask = (task: string, date: Date) => {
+
     setModalVisible(false);
 
-    if (task.length > 0) {
+    if (task.length > 0) 
+    {
       const newTask = { title: task, completed: false, date: format(date, "yyyy-MM-dd") };
       const newTasks = [...tasks, newTask];
       setTasks(newTasks);
       saveTasks(TASKS_STORAGE_KEY, newTasks);
-    } else {
+    } 
+    else 
+    {
       Alert.alert('Task cannot be empty');
     }
+
   }
 
   return (

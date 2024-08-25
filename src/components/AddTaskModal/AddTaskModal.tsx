@@ -21,14 +21,21 @@ const AddTaskModal: React.FC<AddTaskModalProps> = (props: AddTaskModalProps) => 
         setDate(new Date());
     }
 
+    const onModalClose = () => {
+
+        onClose();
+        setTask('');
+        setDate(new Date());
+    }
+
     return (
         <Modal
             animationType="slide"
             transparent={true}
             visible={isModalVisible}
-            onRequestClose={onClose}
+            onRequestClose={onModalClose}
         >
-            <TouchableWithoutFeedback onPress={onClose}>
+            <TouchableWithoutFeedback onPress={onModalClose}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>Task Description</Text>
@@ -64,7 +71,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = (props: AddTaskModalProps) => 
                                 buttonStyle={styles.modalButton}
                                 buttonTextStyle={styles.modalButtonText}
                                 text='Cancel'
-                                onClick={onClose}
+                                onClick={onModalClose}
                             />
                         </View>
                     </View>
