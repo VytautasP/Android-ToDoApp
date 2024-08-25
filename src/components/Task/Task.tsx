@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
+import { TaskType } from '../../models/task';
 
 interface TaskProps {
-  task: {
-    title: string;
-    completed: boolean;
-  };
-  index: number;
-  completeTask: (index: number) => void;
+  task: TaskType;
+  completeTask: (id: string) => void;
+  deleteTask: (id: string) => void;
 }
 
 const scheduleReminder = async (taskTitle: string) => {
@@ -38,7 +37,7 @@ const scheduleReminder = async (taskTitle: string) => {
   });
 };
 
-const scheduleReminderWithTrigger = async (taskTitle: string) => {
+const scheduleReminderWithTrigger = async (task: TaskType) => {
   await notifee.requestPermission();
 
   const date = new Date(Date.now());
@@ -60,7 +59,7 @@ const scheduleReminderWithTrigger = async (taskTitle: string) => {
   await notifee.createTriggerNotification(
     {
       title: 'ToDo Task Reminder',
-      body: taskTitle,
+      body: task.title,
       android: {
         channelId: channelId,
         smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
@@ -71,7 +70,7 @@ const scheduleReminderWithTrigger = async (taskTitle: string) => {
   );
 };
 
-const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
+const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProps) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpanded = () => {
@@ -84,11 +83,14 @@ const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
     <View style={styles.taskContainer}>
       {/* Action Bar Area */}
       <View style={styles.actionBarArea}>
-        <TouchableOpacity onPress={() => completeTask(index)} style={styles.actionButton}>
+        <TouchableOpacity onPress={() => completeTask(task.id)} style={styles.actionButton}>
           <Icon name="check-circle" size={20} color="green" />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => deleteTask(task.id)} style={styles.actionButton}>
+          <IconCommunity name="delete-circle" size={20} color="red" />
+        </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => scheduleReminderWithTrigger(task.title)}
+          onPress={() => scheduleReminderWithTrigger(task)}
           style={styles.actionButton}
         >
           <Icon name="notifications" size={20} color="#6200ee" />
@@ -98,7 +100,7 @@ const Task: React.FC<TaskProps> = ({ task, index, completeTask }) => {
       {/* Content Area */}
       <TouchableOpacity onPress={toggleExpanded} style={styles.contentArea}>
         <Text style={task.completed ? styles.taskTextCompleted : styles.taskText}>
-          {expanded ? task.title : task.title.split(' ').slice(0, 10).join(' ') + '...'}
+          { expanded || task.title.length < 35 ? task.title : task.title.slice(0, 35) + '...' }
         </Text>
       </TouchableOpacity>
     </View>

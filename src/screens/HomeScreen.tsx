@@ -8,6 +8,8 @@ import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
 import TouchableButton from '../components/button/TouchableButton';
 import AddTaskModal from '../components/AddTaskModal/AddTaskModal';
+import "react-native-get-random-values";
+import { v4 as uuid } from 'uuid';
 
 
 const TASKS_STORAGE_KEY = '@tasks';
@@ -52,7 +54,8 @@ const HomeScreen: React.FC = () => {
     fetchTasks();
   }, []);
 
-  const completeTask = (index: number) => {
+  const completeTask = (id: string) => {
+    const index = tasks.findIndex((task) => task.id === id);
     const newTasks = [...tasks];
     const completedTask = { ...newTasks[index], completed: true };
     newTasks.splice(index, 1);
@@ -64,13 +67,26 @@ const HomeScreen: React.FC = () => {
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
   };
 
+  const deleteTask = (id: string) => {
+    const index = tasks.findIndex((task) => task.id === id);
+    const newTasks = [...tasks];
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
+    saveTasks(TASKS_STORAGE_KEY, newTasks);
+  };
+
   const onAddTask = (task: string, date: Date) => {
 
     setModalVisible(false);
 
     if (task.length > 0) 
     {
-      const newTask = { title: task, completed: false, date: format(date, "yyyy-MM-dd") };
+      const newTask = { 
+        id: uuid(),
+        title: task, 
+        completed: false, 
+        date: format(date, "yyyy-MM-dd") 
+      };
       const newTasks = [...tasks, newTask];
       setTasks(newTasks);
       saveTasks(TASKS_STORAGE_KEY, newTasks);
@@ -84,7 +100,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <TaskList tasks={tasks} completeTask={completeTask} />
+      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />
       <View>
         <TouchableButton text="Add" onClick={() => setModalVisible(true)} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />

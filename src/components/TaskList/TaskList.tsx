@@ -5,10 +5,11 @@ import { TaskType } from '../../models/task';
 
 interface TaskListProps {
     tasks: TaskType[];
-    completeTask: (index: number) => void;
+    completeTask: (id: string) => void;
+    deleteTask: (id: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask } : TaskListProps) => {
 
     const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
@@ -24,10 +25,10 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask }) => {
                         <Text style={styles.dateHeader}>{date}</Text>
                         {groupedTasks[date].map((task, index) => (
                             <Task
-                                key={index}
+                                key={task.id}
                                 task={task}
-                                index={index}
                                 completeTask={completeTask}
+                                deleteTask={deleteTask}
                             />
                         ))}
                     </View>
