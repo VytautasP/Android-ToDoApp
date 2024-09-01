@@ -75,6 +75,7 @@ const scheduleReminderWithTrigger = async (task: TaskType) => {
 const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProps) => {
   const [expanded, setExpanded] = useState(false);
   const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
+  const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
 
   const toggleExpanded = () => {
     // Animate the layout change
@@ -92,7 +93,7 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProp
             <Icon name="check-circle" size={20} color="green" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => deleteTask(task.id)} style={styles.actionButton}>
+          <TouchableOpacity onPress={() => setIsDeleteTaskModalVisible(true)} style={styles.actionButton}>
             <IconCommunity name="delete-circle" size={20} color="red" />
           </TouchableOpacity>
 
@@ -109,18 +110,28 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProp
         </TouchableOpacity>
       </View>
 
-     {/* Complete Task confirm modal */}
+      {/* Complete Task confirm modal */}
       <ConfirmPopup
         isModalVisible={isCompleteTaskModalVisible}
-        onConfirm={() => {}}
-        OnCancel={() => {setIsCompleteTaskModalVisible(false)}}
+        onConfirm={() => { completeTask(task.id) }}
+        OnCancel={() => { setIsCompleteTaskModalVisible(false) }}
         title="Complete task?"
         subtitle="Task will be removed from the list and moved to history."
-        >
-          <IconFeather name="check-circle" size={60} color="green" />
-        </ConfirmPopup>
+      >
+        <IconFeather name="check-circle" size={60} color="green" />
+      </ConfirmPopup>
 
-        {/* Delete Task confirm Modal */}
+      {/* Delete Task confirm Modal */}
+      <ConfirmPopup
+        isModalVisible={isDeleteTaskModalVisible}
+        onConfirm={() => { deleteTask(task.id) }}
+        OnCancel={() => { setIsDeleteTaskModalVisible(false) }}
+        title="Delete task?"
+        subtitle="Task will be removed from the list."
+      >
+        <IconFeather name="alert-triangle" size={60} color="orange" />
+      </ConfirmPopup>
+
     </>
   );
 };
