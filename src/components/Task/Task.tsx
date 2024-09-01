@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconFeather from 'react-native-vector-icons/Feather';
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { TaskType } from '../../models/task';
+import ConfirmPopup from '../ConfirmPopup/ConfirmPopup';
 
 interface TaskProps {
   task: TaskType;
@@ -72,6 +74,7 @@ const scheduleReminderWithTrigger = async (task: TaskType) => {
 
 const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
 
   const toggleExpanded = () => {
     // Animate the layout change
@@ -80,30 +83,45 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProp
   };
 
   return (
-    <View style={styles.taskContainer}>
-      {/* Action Bar Area */}
-      <View style={styles.actionBarArea}>
-        <TouchableOpacity onPress={() => completeTask(task.id)} style={styles.actionButton}>
-          <Icon name="check-circle" size={20} color="green" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteTask(task.id)} style={styles.actionButton}>
-          <IconCommunity name="delete-circle" size={20} color="red" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => scheduleReminderWithTrigger(task)}
-          style={styles.actionButton}
-        >
-          <Icon name="notifications" size={20} color="#6200ee" />
+    <>
+      <View style={styles.taskContainer}>
+        {/* Action Bar Area */}
+        <View style={styles.actionBarArea}>
+
+          <TouchableOpacity onPress={() => setIsCompleteTaskModalVisible(true)} style={styles.actionButton}>
+            <Icon name="check-circle" size={20} color="green" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => deleteTask(task.id)} style={styles.actionButton}>
+            <IconCommunity name="delete-circle" size={20} color="red" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => scheduleReminderWithTrigger(task)} style={styles.actionButton}>
+            <Icon name="notifications" size={20} color="#6200ee" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Content Area */}
+        <TouchableOpacity onPress={toggleExpanded} style={styles.contentArea}>
+          <Text style={task.completed ? styles.taskTextCompleted : styles.taskText}>
+            {expanded || task.title.length < 35 ? task.title : task.title.slice(0, 35) + '...'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Content Area */}
-      <TouchableOpacity onPress={toggleExpanded} style={styles.contentArea}>
-        <Text style={task.completed ? styles.taskTextCompleted : styles.taskText}>
-          { expanded || task.title.length < 35 ? task.title : task.title.slice(0, 35) + '...' }
-        </Text>
-      </TouchableOpacity>
-    </View>
+     {/* Complete Task confirm modal */}
+      <ConfirmPopup
+        isModalVisible={isCompleteTaskModalVisible}
+        onConfirm={() => {}}
+        OnCancel={() => {setIsCompleteTaskModalVisible(false)}}
+        title="Complete task?"
+        subtitle="Task will be removed from the list and moved to history."
+        >
+          <IconFeather name="check-circle" size={60} color="green" />
+        </ConfirmPopup>
+
+        {/* Delete Task confirm Modal */}
+    </>
   );
 };
 
