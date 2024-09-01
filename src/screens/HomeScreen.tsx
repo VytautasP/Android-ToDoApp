@@ -10,6 +10,7 @@ import TouchableButton from '../components/button/TouchableButton';
 import AddTaskModal from '../components/AddTaskModal/AddTaskModal';
 import "react-native-get-random-values";
 import { v4 as uuid } from 'uuid';
+import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 
 const TASKS_STORAGE_KEY = '@tasks';
@@ -54,27 +55,6 @@ const HomeScreen: React.FC = () => {
     fetchTasks();
   }, []);
 
-  const completeTask = (id: string) => {
-    const index = tasks.findIndex((task) => task.id === id);
-    const newTasks = [...tasks];
-    const completedTask = { ...newTasks[index], completed: true };
-    newTasks.splice(index, 1);
-    setTasks(newTasks);
-    saveTasks(TASKS_STORAGE_KEY, newTasks);
-
-    const newCompletedTasks = [...completedTasks, completedTask];
-    setCompletedTasks(newCompletedTasks);
-    saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
-  };
-
-  const deleteTask = (id: string) => {
-    const index = tasks.findIndex((task) => task.id === id);
-    const newTasks = [...tasks];
-    newTasks.splice(index, 1);
-    setTasks(newTasks);
-    saveTasks(TASKS_STORAGE_KEY, newTasks);
-  };
-
   const onAddTask = (task: string, date: Date) => {
 
     setModalVisible(false);
@@ -98,9 +78,68 @@ const HomeScreen: React.FC = () => {
 
   }
 
+  const completeTask = (id: string) => {
+    const index = tasks.findIndex((task) => task.id === id);
+    const newTasks = [...tasks];
+    const completedTask = { ...newTasks[index], completed: true };
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
+    saveTasks(TASKS_STORAGE_KEY, newTasks);
+
+    const newCompletedTasks = [...completedTasks, completedTask];
+    setCompletedTasks(newCompletedTasks);
+    saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
+  };
+
+  const deleteTask = (id: string) => {
+    const index = tasks.findIndex((task) => task.id === id);
+    const newTasks = [...tasks];
+    newTasks.splice(index, 1);
+    setTasks(newTasks);
+    saveTasks(TASKS_STORAGE_KEY, newTasks);
+  };
+
+  const scheduleTaskReminder = async (id: string, date: Date) => {
+
+    console.log(`Scheduling reminder for task with ID: ${id} at ${date}`);
+    
+    await notifee.requestPermission();
+
+    const task = tasks.find((task) => task.id === id)!;
+
+    // Create a time-based trigger
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: date.getTime(),
+    };
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    // Create a trigger notification
+    const reminderId = await notifee.createTriggerNotification(
+      {
+        title: 'ToDo Task Reminder',
+        body: task.title,
+        android: {
+          channelId: channelId,
+          smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
+          color: '#808000',
+        },
+      },
+      trigger
+    );
+
+    console.log(`Scheduled reminder with ID: ${reminderId}`);
+
+  }
+
   return (
     <View style={styles.container}>
-      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} />
+      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} scheduleTask={scheduleTaskReminder} />
       <View>
         <TouchableButton text="Add" onClick={() => setModalVisible(true)} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />

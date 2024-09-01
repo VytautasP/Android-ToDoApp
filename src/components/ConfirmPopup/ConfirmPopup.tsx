@@ -4,7 +4,7 @@ import TouchableButton from '../button/TouchableButton';
 
 interface ConfirmPopupProprs {
     isModalVisible: boolean;
-    title : string;
+    title? : string;
     subtitle?: string;
     onConfirm: () => void;
     OnCancel: () => void;
@@ -26,22 +26,24 @@ const ConfirmPopup: React.FC<ConfirmPopupProprs> = (props: ConfirmPopupProprs) =
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
 
-            <View style={styles.icon}>
+            <View style={styles.childrenContainer}>
               {children}
             </View>
 
-            <Text style={styles.modalTitle}>
+            {title?.length && title.length > 0 ? (<Text style={styles.modalTitle}>
 
-              {title.split("\\n").map((line, index) => (
+              {title?.split("\\n").map((line, index) => (
                 <React.Fragment key={index}>
                   {line}
                   {'\n'}
                 </React.Fragment>
               ))}
 
-            </Text>
+            </Text>)
+              : (<></>)
+            }
 
-            <Text style={styles.modalSubTitle}>
+            {subtitle?.length && subtitle.length > 0 ? (<Text style={styles.modalSubTitle}>
 
               {subtitle?.split("\\n").map((line, index) => (
                 <React.Fragment key={index}>
@@ -51,6 +53,8 @@ const ConfirmPopup: React.FC<ConfirmPopupProprs> = (props: ConfirmPopupProprs) =
               ))}
 
             </Text>
+            ) : (<></>)
+            }
 
             <View style={styles.buttonContainer}>
               <TouchableButton
@@ -94,10 +98,11 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.2,
       shadowRadius: 8,
     },
-    icon: {
-        width: 70,
-        height: 70,
+    childrenContainer: {
+        width: '100%',
+        height: 'auto',
         marginBottom: 10,
+        alignItems: 'center'
       },
     modalTitle: {
       fontSize: 20,

@@ -7,9 +7,10 @@ interface TaskListProps {
     tasks: TaskType[];
     completeTask: (id: string) => void;
     deleteTask: (id: string) => void;
+    scheduleTask: (id: string, reminderDate: Date) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask } : TaskListProps) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask, scheduleTask } : TaskListProps) => {
 
     const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
@@ -29,6 +30,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask } :
                                 task={task}
                                 completeTask={completeTask}
                                 deleteTask={deleteTask}
+                                scheduleTask={scheduleTask}
                             />
                         ))}
                     </View>

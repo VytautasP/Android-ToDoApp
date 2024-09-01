@@ -6,11 +6,13 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { TaskType } from '../../models/task';
 import ConfirmPopup from '../ConfirmPopup/ConfirmPopup';
+import DatePicker from 'react-native-date-picker';
 
 interface TaskProps {
   task: TaskType;
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  scheduleTask: (id: string, reminderDate: Date) => void;
 }
 
 const scheduleReminder = async (taskTitle: string) => {
@@ -72,10 +74,12 @@ const scheduleReminderWithTrigger = async (task: TaskType) => {
   );
 };
 
-const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProps) => {
+const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTask } : TaskProps) => {
   const [expanded, setExpanded] = useState(false);
   const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
   const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
+  const [isScheduleTaskModalVisible, setScheduleTaskModalVisible] = useState(false);
+  const [reminderDate, setReminderDate] = useState(new Date(task.date));
 
   const toggleExpanded = () => {
     // Animate the layout change
@@ -83,23 +87,33 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProp
     setExpanded(!expanded);
   };
 
+  const onScheduleTask = () => {
+   //TODO: fix scheduling check if reminderDate is in the future
+    scheduleTask(task.id, reminderDate); 
+    setScheduleTaskModalVisible(false);
+  }
+
   return (
     <>
       <View style={styles.taskContainer}>
         {/* Action Bar Area */}
         <View style={styles.actionBarArea}>
 
+          {/* Complete task button */}
           <TouchableOpacity onPress={() => setIsCompleteTaskModalVisible(true)} style={styles.actionButton}>
             <Icon name="check-circle" size={20} color="green" />
           </TouchableOpacity>
 
+          {/* Delete task button */}
           <TouchableOpacity onPress={() => setIsDeleteTaskModalVisible(true)} style={styles.actionButton}>
             <IconCommunity name="delete-circle" size={20} color="red" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => scheduleReminderWithTrigger(task)} style={styles.actionButton}>
+          {/* Schedule task button */}
+          <TouchableOpacity onPress={() => setScheduleTaskModalVisible(true)} style={styles.actionButton}>
             <Icon name="notifications" size={20} color="#6200ee" />
           </TouchableOpacity>
+
         </View>
 
         {/* Content Area */}
@@ -130,6 +144,16 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask } : TaskProp
         subtitle="Task will be removed from the list."
       >
         <IconFeather name="alert-triangle" size={60} color="orange" />
+      </ConfirmPopup>
+
+      {/* Schedule Task confirm Modal */}
+      <ConfirmPopup
+        isModalVisible={isScheduleTaskModalVisible}
+        onConfirm={onScheduleTask}
+        OnCancel={() => { setScheduleTaskModalVisible(false) }}
+        subtitle='Select the time to schedule the reminder.'
+      >
+        <DatePicker date={new Date(task.date)} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
       </ConfirmPopup>
 
     </>
