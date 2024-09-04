@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
     },
     dateHeader: {
-      textAlign: 'center', // <-- the magic
+      textAlign: 'center',
       fontSize: 24,
       fontWeight: 'bold',
       marginVertical: 10,

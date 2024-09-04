@@ -24,6 +24,7 @@ const loadTasks = async (key: string): Promise<TaskType[]> => {
     }
   } catch (error) {
     console.error(`Failed to load tasks from storage (${key}):`, error);
+    Alert.alert('Error', 'Failed to load tasks from storage');
   }
   return [];
 };
@@ -34,6 +35,7 @@ const saveTasks = async (key: string, tasks: TaskType[]) => {
     await AsyncStorage.setItem(key, tasksString);
   } catch (error) {
     console.error(`Failed to save tasks to storage (${key}):`, error);
+    Alert.alert('Error', 'Failed to save tasks to storage');
   }
 };
 
@@ -134,7 +136,6 @@ const HomeScreen: React.FC = () => {
     );
 
     console.log(`Scheduled reminder with ID: ${reminderId}`);
-
   }
 
   return (

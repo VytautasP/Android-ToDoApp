@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between', // Ensure rows contain 7 items
+    justifyContent: 'space-between',
   },
   day: {
     width: 30,

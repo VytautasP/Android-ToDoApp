@@ -29,9 +29,7 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
   };
 
   const onScheduleTask = () => {
-   //TODO: check if remainder pops up if app is closed
-   //TODO: fix scheduling check if reminderDate is in the future
-   //check if reminderDate is in the future
+    
     const now = new Date();
     if (reminderDate < now) {
       Alert.alert('Error', 'Reminder date must be in the future.');

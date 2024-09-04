@@ -82,18 +82,18 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Darken background
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalView: {
-      width: '90%', // Responsive width
-      maxWidth: 400, // Maximum width
-      backgroundColor: '#fff', // White background
-      borderRadius: 12, // Rounded corners
-      paddingVertical: 30, // Padding
+      width: '90%',
+      maxWidth: 400,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      paddingVertical: 30,
       paddingHorizontal: 20,
       alignItems: 'center',
-      elevation: 10, // Android shadow
-      shadowColor: '#000', // iOS shadow
+      elevation: 10,
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
@@ -108,30 +108,28 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 5,
-      color: '#333', // Text color
+      color: '#333',
       textAlign: 'center',
     },
     modalSubTitle: {
       fontSize: 14,
       marginBottom: 20,
-      color: '#333', // Text color
+      color: '#333',
       textAlign: 'center',
     },
     section: {
       width: '100%',
-      //padding: 20,
-      marginBottom: 15, // Space between sections
+      marginBottom: 15
     },
     input: {
       height: 100,
       borderColor: '#ddd',
       borderWidth: 1,
-      borderRadius: 10, // Rounded corners for input fields
+      borderRadius: 10,
       paddingHorizontal: 15,
-      backgroundColor: '#fff', // White background for inputs
-      fontSize: 16, // Consistent font size
-      textAlignVertical: 'top', // Aligns text to the top of the TextInput
-      //marginBottom: 10, // Space below input
+      backgroundColor: '#fff',
+      fontSize: 16,
+      textAlignVertical: 'top'
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -141,16 +139,12 @@ const styles = StyleSheet.create({
     modalButton: {
       flex: 1,
       paddingVertical: 10,
-      //borderRadius: 12, // Rounded corners for buttons
-      //borderWidth: 2,
-      //borderColor: '#007bff', // Blue theme color
       marginHorizontal: 5,
       alignItems: 'center',
       height: 45
     },
     modalButtonText: {
       fontSize: 14,
-      //color: '#007bff', // Blue text
       fontWeight: 'bold',
     }
   });
