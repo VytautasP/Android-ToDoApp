@@ -15,64 +15,6 @@ interface TaskProps {
   scheduleTask: (id: string, reminderDate: Date) => void;
 }
 
-const scheduleReminder = async (taskTitle: string) => {
-  // Request permissions (required for iOS)
-  await notifee.requestPermission();
-
-  // Create a channel (required for Android)
-  const channelId = await notifee.createChannel({
-    id: 'default',
-    name: 'Default Channel',
-  });
-
-  // Display a notification
-  await notifee.displayNotification({
-    title: 'ToDo Task Reminder',
-    body: taskTitle,
-    android: {
-      channelId,
-      smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
-      color: '#808000',
-      // pressAction is needed if you want the notification to open the app when pressed
-      pressAction: {
-        id: 'default',
-      },
-    },
-  });
-};
-
-const scheduleReminderWithTrigger = async (task: TaskType) => {
-  await notifee.requestPermission();
-
-  const date = new Date(Date.now());
-  date.setMinutes(date.getMinutes() + 2);
-
-  // Create a time-based trigger
-  const trigger: TimestampTrigger = {
-    type: TriggerType.TIMESTAMP,
-    timestamp: date.getTime(),
-  };
-
-  // Create a channel (required for Android)
-  const channelId = await notifee.createChannel({
-    id: 'default',
-    name: 'Default Channel',
-  });
-
-  // Create a trigger notification
-  await notifee.createTriggerNotification(
-    {
-      title: 'ToDo Task Reminder',
-      body: task.title,
-      android: {
-        channelId: channelId,
-        smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.
-        color: '#808000',
-      },
-    },
-    trigger
-  );
-};
 
 const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTask } : TaskProps) => {
   const [expanded, setExpanded] = useState(false);
@@ -82,12 +24,12 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
   const [reminderDate, setReminderDate] = useState(new Date(task.date));
 
   const toggleExpanded = () => {
-    // Animate the layout change
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
 
   const onScheduleTask = () => {
+   //TODO: check if remainder pops up if app is closed
    //TODO: fix scheduling check if reminderDate is in the future
     scheduleTask(task.id, reminderDate); 
     setScheduleTaskModalVisible(false);
@@ -188,14 +130,12 @@ const styles = StyleSheet.create({
   },
   taskText: {
     fontSize: 16,
-    color: '#333',
-    //fontFamily: 'Kalam-Regular'
+    color: '#333'
   },
   taskTextCompleted: {
     fontSize: 16,
     textDecorationLine: 'line-through',
-    color: 'gray',
-    //fontFamily: 'Kalam-Regular',
+    color: 'gray'
   },
   actionButton: {
     marginHorizontal: 5,
