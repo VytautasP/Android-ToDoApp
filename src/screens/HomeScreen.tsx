@@ -73,7 +73,7 @@ const HomeScreen: React.FC = () => {
     } 
     else 
     {
-      Alert.alert('Task cannot be empty');
+      Alert.alert('Error', 'Task cannot be empty');
     }
 
   }

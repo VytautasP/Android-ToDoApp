@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconFeather from 'react-native-vector-icons/Feather';
@@ -31,6 +31,13 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
   const onScheduleTask = () => {
    //TODO: check if remainder pops up if app is closed
    //TODO: fix scheduling check if reminderDate is in the future
+   //check if reminderDate is in the future
+    const now = new Date();
+    if (reminderDate < now) {
+      Alert.alert('Error', 'Reminder date must be in the future.');
+      return;
+    }
+
     scheduleTask(task.id, reminderDate); 
     setScheduleTaskModalVisible(false);
   }
