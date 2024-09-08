@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Image, Alert
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconFeather from 'react-native-vector-icons/Feather';
-import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AuthorizationStatus } from '@notifee/react-native';
 import { TaskType } from '../../models/task';
 import ConfirmPopup from '../ConfirmPopup/ConfirmPopup';
 import DatePicker from 'react-native-date-picker';
@@ -40,6 +40,28 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
     setScheduleTaskModalVisible(false);
   }
 
+  const onScheduleTaskButtonPress = async () => {
+
+    const settings = await notifee.requestPermission();
+
+    console.log(settings.authorizationStatus);
+
+    if(settings.authorizationStatus === AuthorizationStatus.DENIED) {
+      Alert.alert('Error', 'Please enable alarm permission to schedule reminders.');
+      return;
+    }
+    setScheduleTaskModalVisible(true) 
+  }
+
+  const getCurrentTaskDate = () : Date => {
+    const now = new Date();
+    const dt = new Date(task.date);
+    dt.setHours(now.getHours());
+    dt.setMinutes(now.getMinutes());
+
+    return dt;
+  }
+
   return (
     <>
       <View style={styles.taskContainer}>
@@ -57,7 +79,7 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
           </TouchableOpacity>
 
           {/* Schedule task button */}
-          <TouchableOpacity onPress={() => setScheduleTaskModalVisible(true)} style={styles.actionButton}>
+          <TouchableOpacity onPress={() => onScheduleTaskButtonPress()} style={styles.actionButton}>
             <Icon name="notifications" size={20} color="#6200ee" />
           </TouchableOpacity>
 
@@ -100,7 +122,7 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
         OnCancel={() => { setScheduleTaskModalVisible(false) }}
         subtitle='Select the time to schedule the reminder.'
       >
-        <DatePicker date={new Date(task.date)} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
+        <DatePicker date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
       </ConfirmPopup>
 
     </>

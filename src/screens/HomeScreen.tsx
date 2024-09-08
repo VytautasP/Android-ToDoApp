@@ -10,7 +10,7 @@ import TouchableButton from '../components/button/TouchableButton';
 import AddTaskModal from '../components/AddTaskModal/AddTaskModal';
 import "react-native-get-random-values";
 import { v4 as uuid } from 'uuid';
-import notifee, { TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 
 const TASKS_STORAGE_KEY = '@tasks';
@@ -105,21 +105,23 @@ const HomeScreen: React.FC = () => {
 
     console.log(`Scheduling reminder for task with ID: ${id} at ${date}`);
     
-    await notifee.requestPermission();
-
     const task = tasks.find((task) => task.id === id)!;
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'Default',
+      name: 'Default-Channel',
+      importance: AndroidImportance.HIGH,
+    });
 
     // Create a time-based trigger
     const trigger: TimestampTrigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: date.getTime(),
+      // alarmManager: {
+      //   allowWhileIdle: true
+      // }
     };
-
-    // Create a channel (required for Android)
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
 
     // Create a trigger notification
     const reminderId = await notifee.createTriggerNotification(
