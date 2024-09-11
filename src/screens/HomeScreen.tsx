@@ -3,7 +3,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
 import TouchableButton from '../components/button/TouchableButton';
@@ -13,8 +13,8 @@ import { v4 as uuid } from 'uuid';
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 
-const TASKS_STORAGE_KEY = '@tasks';
-const COMPLETED_TASKS_STORAGE_KEY = '@completedTasks';
+const TASKS_STORAGE_KEY = '@todo-tasks-storage';
+const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
 
 const loadTasks = async (key: string): Promise<TaskType[]> => {
   try {
@@ -138,6 +138,10 @@ const HomeScreen: React.FC = () => {
     );
 
     console.log(`Scheduled reminder with ID: ${reminderId}`);
+    task.reminderId = reminderId;
+    task.reminderDate = format(date, "yyyy-MM-dd HH:mm:ss");
+    saveTasks(TASKS_STORAGE_KEY, tasks);
+    setTasks([...tasks]);
   }
 
   return (
@@ -154,7 +158,6 @@ const HomeScreen: React.FC = () => {
         onConfirm={onAddTask}
         onClose={() => setModalVisible(false)}
       />
-
     </View>
   );
 };
