@@ -13,10 +13,10 @@ import { v4 as uuid } from 'uuid';
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 
-const TASKS_STORAGE_KEY = '@todo-tasks-storage';
-const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
+export const TASKS_STORAGE_KEY = '@todo-tasks-storage';
+export const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
 
-const loadTasks = async (key: string): Promise<TaskType[]> => {
+export const loadTasks = async (key: string): Promise<TaskType[]> => {
   try {
     const tasksString = await AsyncStorage.getItem(key);
     if (tasksString !== null) {
@@ -29,7 +29,7 @@ const loadTasks = async (key: string): Promise<TaskType[]> => {
   return [];
 };
 
-const saveTasks = async (key: string, tasks: TaskType[]) => {
+export const saveTasks = async (key: string, tasks: TaskType[]) => {
   try {
     const tasksString = JSON.stringify(tasks);
     await AsyncStorage.setItem(key, tasksString);
@@ -39,7 +39,12 @@ const saveTasks = async (key: string, tasks: TaskType[]) => {
   }
 };
 
-const HomeScreen: React.FC = () => {
+
+interface HomeScreenProps {
+  deliveredNotifications: string[];
+}
+
+const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeScreenProps) => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,15 +52,18 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
   useEffect(() => {
+
     const fetchTasks = async () => {
+
       const loadedTasks = await loadTasks(TASKS_STORAGE_KEY);
+
       setTasks(loadedTasks);
       const loadedCompletedTasks = await loadTasks(COMPLETED_TASKS_STORAGE_KEY);
       setCompletedTasks(loadedCompletedTasks);
     };
 
     fetchTasks();
-  }, []);
+  }, [deliveredNotifications]);
 
   const onAddTask = (task: string, date: Date) => {
 
@@ -128,6 +136,9 @@ const HomeScreen: React.FC = () => {
       {
         title: 'ToDo Task Reminder',
         body: task.title,
+        data: {
+          taskId: task.id
+        },
         android: {
           channelId: channelId,
           smallIcon: 'ic_check_list', // optional, defaults to 'ic_launcher'.

@@ -56,8 +56,21 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
 
         return dt;
     }
+    
+    const currentTime = new Date();
+    const isTaskScheduled = () : boolean =>{
 
-    // Implement the component logic here
+         if(task.reminderDate){
+            var remainderDate = new Date(task.reminderDate);
+            var differenceInSeconds = (remainderDate.getTime() - currentTime.getTime()) / 1000;
+
+            if(differenceInSeconds > 2){
+                return true;
+            }
+         }
+
+         return false;
+    }
 
     return (
         <>
@@ -78,7 +91,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 {/*TODO: jeigu uzdedi reminderi ir atisnaujina taskai su icon nucanelinti reminder, bet po laiko reminderis fire'ina, tai icone neatsirefreshina. Reikia solution */}
                 {/*TODO: jeigu taska reikia cancelinti rodyti kita popup */}
                 <TouchableOpacity onPress={() => onScheduleTaskButtonPress()} style={styles.actionButton}>
-                    {task.reminderId && task.reminderDate
+                    {isTaskScheduled()
                         ? (<Ionicon name="notifications-off-sharp" size={20} color="#6200ee" />)
                         : (<Icon name="notifications" size={20} color="#6200ee" />)
                     }
