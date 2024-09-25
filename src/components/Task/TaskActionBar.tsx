@@ -14,12 +14,14 @@ interface TaskActionBarProps {
     completeTask: (id: string) => void;
     deleteTask: (id: string) => void;
     scheduleTask: (id: string, reminderDate: Date) => void;
+    cancelScheduleTask: (id: string) => void;
 }
 
-const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, deleteTask, scheduleTask }: TaskActionBarProps) => {
+const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, deleteTask, scheduleTask, cancelScheduleTask }: TaskActionBarProps) => {
     const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
     const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
     const [isScheduleTaskModalVisible, setScheduleTaskModalVisible] = useState(false);
+    const [isCancelScheduleTaskModalVisible, setCancelScheduleTaskModalVisible] = useState(false);
     const [reminderDate, setReminderDate] = useState(new Date(task.date));
 
     const onScheduleTask = () => {
@@ -35,7 +37,17 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
         setScheduleTaskModalVisible(false);
     }
 
+    const onCancelReminder = () => {
+       setCancelScheduleTaskModalVisible(false)
+       cancelScheduleTask(task.id);
+    }
+
     const onScheduleTaskButtonPress = async () => {
+
+        if(isTaskScheduled()){
+            setCancelScheduleTaskModalVisible(true);
+            return;
+        }
 
         const settings = await notifee.requestPermission();
 
@@ -121,7 +133,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 <IconFeather name="alert-triangle" size={60} color="orange" />
             </ConfirmPopup>
 
-            {/* Schedule Task confirm Modal */}
+            {/* Schedule Task Modal */}
             <ConfirmPopup
                 isModalVisible={isScheduleTaskModalVisible}
                 onConfirm={onScheduleTask}
@@ -129,6 +141,17 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 subtitle='Select the time to schedule the reminder.'
             >
                 <DatePicker date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
+            </ConfirmPopup>
+
+            {/* Cancel scheduled Task Modal */}
+            <ConfirmPopup
+                isModalVisible={isCancelScheduleTaskModalVisible}
+                onConfirm={onCancelReminder}
+                OnCancel={() => { setCancelScheduleTaskModalVisible(false) }}
+                title="Cancel reminder?"
+                subtitle="Remainder notification will be removed from schedule manager."
+            >
+                <IconFeather name="alert-triangle" size={60} color="orange" />
             </ConfirmPopup>
 
         </>

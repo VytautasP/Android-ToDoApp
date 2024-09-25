@@ -155,9 +155,21 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
     setTasks([...tasks]);
   }
 
+  const cancelScheduleTaskReminder = async (id: string) => {
+    const task = tasks.find((task) => task.id === id)!;
+    if (task.reminderId) {
+      console.log(`Cancelling reminder with ID: ${task.reminderId}`);
+      await notifee.cancelNotification(task.reminderId);
+      task.reminderId = undefined;
+      task.reminderDate = undefined;
+      saveTasks(TASKS_STORAGE_KEY, tasks);
+      setTasks([...tasks]);
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} scheduleTask={scheduleTaskReminder} />
+      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} scheduleTask={scheduleTaskReminder} cancelScheduleTask={cancelScheduleTaskReminder}/>
       <View>
         <TouchableButton text="Add" onClick={() => setModalVisible(true)} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
