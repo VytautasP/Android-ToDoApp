@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import TouchableButton from '../button/TouchableButton';
 import DatePicker from 'react-native-date-picker';
+import globalStyles from '../../style/style'
 
 interface AddTaskModalProps {
     isModalVisible: boolean;
@@ -38,7 +39,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = (props: AddTaskModalProps) => 
             <TouchableWithoutFeedback onPress={onModalClose}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalTitle}>Task Description</Text>
+                        <Text style={[styles.modalTitle, globalStyles.textColor]}>Task Description</Text>
 
                         {/* Line */}
                         <View
@@ -48,13 +49,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = (props: AddTaskModalProps) => 
                                 width: '98%',
                             }} />
 
-                        <DatePicker date={date} mode="date" onDateChange={setDate} dividerColor='#c6c6c6' />
+                        <DatePicker theme="light" date={date} mode="date" onDateChange={setDate} dividerColor='#c6c6c6'/>
 
                         <View style={styles.section}>
                             <TextInput
                                 multiline={true}
-                                style={styles.input}
+                                style={[styles.input, globalStyles.textColor]}
                                 placeholder="Enter your task here..."
+                                placeholderTextColor="#c0c0c0" 
                                 value={task}
                                 onChangeText={setTask}
                             />
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalView: {
       width: '90%',
@@ -106,7 +108,6 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 20,
-      color: '#333',
       textAlign: 'center',
     },
     section: {
