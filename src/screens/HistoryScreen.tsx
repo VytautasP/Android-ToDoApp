@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TaskHistoryGrid from '../components/TaskHistory/TaskHistoryGrid';
 import TaskHistoryDetails from '../components/TaskHistory/TaskHistoryDetails';
+import globalStyles from '../style/style'
 
 interface TaskType {
   title: string;
@@ -76,12 +77,12 @@ const HistoryScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Completed Tasks History</Text>
+      <Text style={[styles.title, globalStyles.textColor]}>Completed Tasks History</Text>
       <View style={styles.navigationContainer}>
         <TouchableOpacity onPress={handlePreviousMonth}>
           <Icon name="arrow-back" size={30} color="#6200ee" />
         </TouchableOpacity>
-        <Text style={styles.monthLabel}>{format(currentMonth, 'MMMM yyyy')}</Text>
+        <Text style={[styles.monthLabel, globalStyles.textColor]}>{format(currentMonth, 'MMMM yyyy')}</Text>
         <TouchableOpacity onPress={handleNextMonth}>
           <Icon name="arrow-forward" size={30} color="#6200ee" />
         </TouchableOpacity>
@@ -107,8 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
+    marginBottom: 20
   },
   navigationContainer: {
     flexDirection: 'row',

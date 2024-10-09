@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { format } from 'date-fns';
+import globalStyles from '../../style/style'
 
 interface CompletedTasksDate {
   date: string;
@@ -23,31 +24,52 @@ const getColor = (count: number) => {
 const TaskHistoryGrid: React.FC<HistoryGridProps> = ({ completedTasks, handleDayPress }) => {
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
+  const rows = [1, 2, 3, 4, 5, 6];
+  const cols = [1, 2, 3, 4, 5, 6, 7];
 
   return (
     <View>
       <View style={styles.weekDaysContainer}>
         {weekDays.map((day, index) => (
-          <Text key={index} style={styles.weekDay}>
+          <Text key={index} style={[styles.weekDay, globalStyles.textColor]}>
             {day}
           </Text>
         ))}
       </View>
       <View style={styles.gridContainer}>
-        {completedTasks.map((day, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.day, { backgroundColor: day.date ? getColor(day.count) : 'transparent' }]}
-            onPress={() => day.date && handleDayPress(day.date)}
-          >
-            <Text style={styles.dayText}>{day.date ? format(new Date(day.date), 'd') : ''}</Text>
-          </TouchableOpacity>
-        ))}
+        {
+          rows.map((row, rindex) => {
+            return (
+              <View key={row} style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                {cols.map((col, cindex) => {
+                  const currentIndex = rindex * cols.length + cindex;
+                  const completedTask = currentIndex < completedTasks.length ? completedTasks[currentIndex] : undefined;
+                  const taskDate = completedTask ? completedTask.date : undefined;
+
+                  return (
+                    <View style={[styles.gridColumn, {backgroundColor: completedTask ? getColor(completedTask.count): 'transparent'}]}>
+                      <TouchableOpacity
+                        key={`${rindex}-${cindex}`}
+                        style={[styles.dayButton, { backgroundColor: 'transparent' }]}
+                        onPress={() => taskDate && handleDayPress(taskDate)}
+                      >
+                        <Text style={globalStyles.textColor}>{taskDate ? format(new Date(taskDate), 'd') : ''}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })
+        }
       </View>
     </View>
   );
 };
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const columnMargin = 20;
+const columnWidth = Math.floor(screenWidth / 7) - columnMargin;
 
 const styles = StyleSheet.create({
   weekDaysContainer: {
@@ -61,19 +83,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
-  day: {
-    width: 30,
-    height: 30,
-    margin: 8, // Adjust margin to fit 7 items per row
-    alignItems: 'center',
-    justifyContent: 'center',
+  gridColumn:{
+    height: columnWidth , 
+    marginBottom: 10, 
+    width: columnWidth,
+    justifyContent: 'center'
+  },
+  dayButton: {
+    alignItems: 'center'
   },
   dayText: {
-    fontSize: 12,
+    fontSize: 12
   },
 });
 

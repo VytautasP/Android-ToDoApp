@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Task from '../Task/Task';
 import { TaskType } from '../../models/task';
+import globalStyles from '../../style/style'
 
 interface TaskListProps {
     tasks: TaskType[];
@@ -20,11 +21,11 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask, sc
 
     return (
         <>
-            <Text style={styles.title}>To-Do List</Text>
+            <Text style={[styles.title, globalStyles.textColor]}>To-Do List</Text>
             <ScrollView style={styles.scrollView}>
                 {Object.keys(groupedTasks).map((date) => (
                     <View key={date}>
-                        <Text style={styles.dateHeader}>{date}</Text>
+                        <Text style={[styles.dateHeader, globalStyles.textColor]}>{date}</Text>
                         {groupedTasks[date].map((task, index) => (
                             <Task
                                 key={task.id}
@@ -47,9 +48,7 @@ const styles = StyleSheet.create({
       fontSize: 32,
       fontWeight: 'bold',
       textAlign: 'center',
-      marginBottom: 20,
-      color: '#333',
-      fontFamily: 'YourNewFont',
+      marginBottom: 20
     },
     scrollView: {
       flex: 1,
