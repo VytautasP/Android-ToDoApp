@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import TaskHistoryGrid from '../components/TaskHistory/TaskHistoryGrid';
 import TaskHistoryDetails from '../components/TaskHistory/TaskHistoryDetails';
 import globalStyles from '../style/style'
+import { COMPLETED_TASKS_STORAGE_KEY } from './HomeScreen';
 
 interface TaskType {
   title: string;
@@ -14,7 +15,7 @@ interface TaskType {
   date: string;
 }
 
-const COMPLETED_TASKS_STORAGE_KEY = '@completedTasks';
+;
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -58,6 +59,7 @@ const HistoryScreen: React.FC = () => {
     };
 
     fetchCompletedTasks();
+    
   }, [currentMonth]);
 
   const handlePreviousMonth = () => {
