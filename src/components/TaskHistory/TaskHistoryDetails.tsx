@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, StyleSheet} from 'react-native';
+import globalStyles from '../../style/style'
 
 interface ModalBoxProps {
   modalVisible: boolean;
@@ -27,13 +28,13 @@ const TaskHistoryDetails: React.FC<ModalBoxProps> = ({
         <View style={styles.modalContainer}>
           <TouchableWithoutFeedback onPress={() => {}}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Tasks for {selectedDate}</Text>
+              <Text style={[styles.modalTitle, globalStyles.textColor]}>Tasks for {selectedDate}</Text>
               {tasksForSelectedDate.length > 0 ? (
                 tasksForSelectedDate.map((task, index) => (
-                  <Text key={index} style={styles.taskText}>{task.title}  <Text style={styles.completeButton}>✔</Text></Text>
+                  <Text key={index} style={[styles.taskText, globalStyles.textColor]}>{task.title}  <Text style={styles.completeButton}>✔</Text></Text>
                 ))
               ) : (
-                <Text style={styles.taskText}>No tasks completed on this day.</Text>
+                <Text style={[styles.taskText, globalStyles.textColor]}>No tasks completed on this day.</Text>
               )}
               <TouchableOpacity
                 style={styles.closeButton}

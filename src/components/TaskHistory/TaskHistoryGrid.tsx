@@ -18,7 +18,7 @@ const getColor = (count: number) => {
   if (count > 3) return '#30a14e';
   if (count > 2) return '#40c463';
   if (count > 1) return '#9be9a8';
-  return '#ebedf0'; // Lightest color
+  return '#b2ffbf'; // Lightest color
 };
 
 const TaskHistoryGrid: React.FC<HistoryGridProps> = ({ completedTasks, handleDayPress }) => {
@@ -45,7 +45,6 @@ const TaskHistoryGrid: React.FC<HistoryGridProps> = ({ completedTasks, handleDay
                   const currentIndex = rindex * cols.length + cindex;
                   const completedTask = currentIndex < completedTasks.length ? completedTasks[currentIndex] : undefined;
                   const taskDate = completedTask ? completedTask.date : undefined;
-
                   return (
                     <View style={[styles.gridColumn, {backgroundColor: completedTask ? getColor(completedTask.count): 'transparent'}]}>
                       <TouchableOpacity
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
   weekDay: {
     width: 30,
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   gridContainer: {
   },
