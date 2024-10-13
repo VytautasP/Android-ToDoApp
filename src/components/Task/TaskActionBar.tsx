@@ -100,8 +100,6 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 </TouchableOpacity>
 
                 {/* Schedule task button */}
-                {/*TODO: jeigu uzdedi reminderi ir atisnaujina taskai su icon nucanelinti reminder, bet po laiko reminderis fire'ina, tai icone neatsirefreshina. Reikia solution */}
-                {/*TODO: jeigu taska reikia cancelinti rodyti kita popup */}
                 <TouchableOpacity onPress={() => onScheduleTaskButtonPress()} style={styles.actionButton}>
                     {isTaskScheduled()
                         ? (<Ionicon name="notifications-off-sharp" size={20} color="#6200ee" />)
@@ -140,7 +138,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 OnCancel={() => { setScheduleTaskModalVisible(false) }}
                 subtitle='Select the time to schedule the reminder.'
             >
-                <DatePicker date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
+                <DatePicker theme="light" date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
             </ConfirmPopup>
 
             {/* Cancel scheduled Task Modal */}
