@@ -88,8 +88,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
   }
 
-  const completeTask = (id: string) => {
+  const completeTask = async (id: string) => {
+    
     const index = tasks.findIndex((task) => task.id === id);
+    const task = tasks[index];
+    await cancelTaskNotification(task);
+
     const newTasks = [...tasks];
     const completedTask = { ...newTasks[index], completed: true };
     newTasks.splice(index, 1);
@@ -101,8 +105,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
   };
 
-  const deleteTask = (id: string) => {
+  const deleteTask = async (id: string) => {
     const index = tasks.findIndex((task) => task.id === id);
+    const task = tasks[index];
+
+    await cancelTaskNotification(task);
+
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
     setTasks(newTasks);
@@ -157,13 +165,22 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
   const cancelScheduleTaskReminder = async (id: string) => {
     const task = tasks.find((task) => task.id === id)!;
+
+    await cancelTaskNotification(task);
+
     if (task.reminderId) {
-      console.log(`Cancelling reminder with ID: ${task.reminderId}`);
-      await notifee.cancelNotification(task.reminderId);
       task.reminderId = undefined;
       task.reminderDate = undefined;
       saveTasks(TASKS_STORAGE_KEY, tasks);
       setTasks([...tasks]);
+    }
+  }
+
+  const cancelTaskNotification = async (task: TaskType) => {
+
+    if (task.reminderId) {
+      console.log(`Cancelling reminder with ID: ${task.reminderId}`);
+      await notifee.cancelNotification(task.reminderId);
     }
   }
 
