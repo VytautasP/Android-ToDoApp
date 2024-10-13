@@ -17,8 +17,8 @@ const getColor = (count: number) => {
   if (count > 4) return '#216e39'; // Darkest color
   if (count > 3) return '#30a14e';
   if (count > 2) return '#40c463';
-  if (count > 1) return '#9be9a8';
-  return '#b2ffbf'; // Lightest color
+  if (count >= 1 ) return '#9be9a8';
+  return '#ebedf0'; // default background color
 };
 
 const TaskHistoryGrid: React.FC<HistoryGridProps> = ({ completedTasks, handleDayPress }) => {
