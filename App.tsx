@@ -15,22 +15,28 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export const APP_OPEN_COUNT_KEY = '@todo-completed-tasks-app-open_counter';
 export const APP_ADMOB_INTERSTITIAL_ID = 'ca-app-pub-9160717670483486/6469333363'
+export const AD_SHOW_EVERY_OPEN = 3;
+
 
 const App: React.FC = () => {
 
   const [adLoaded, setAdLoaded] = useState(false)
   const [deliveredNotifications, setDeliveredNotifications] = React.useState<string[]>([]);
   
-  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
+  //const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
+  
+  const adUnitId = TestIds.INTERSTITIAL;
+
+  //const adUnitId = 'ca-app-pub-9160717670483486/6469333363';
 
   const getAppOpens = async (): Promise<number> => {
     
     try {
-      const value = await AsyncStorage.getItem('appOpenCount');
+      const value = await AsyncStorage.getItem(APP_OPEN_COUNT_KEY);
       let count = value ? parseInt(value, 10) : 0;
       count += 1;
 
-      await AsyncStorage.setItem('appOpenCount', count.toString());
+      await AsyncStorage.setItem(APP_OPEN_COUNT_KEY, count.toString());
 
       return count;
     } catch (e) {
@@ -78,10 +84,8 @@ const App: React.FC = () => {
 
     interstitial.load();
 
-    let showAdd = appOpenCount % 4 === 0;
+    let showAdd = appOpenCount % AD_SHOW_EVERY_OPEN === 0;
     
-    showAdd = true;
-
     if (showAdd) {
 
       if (adLoaded) {
