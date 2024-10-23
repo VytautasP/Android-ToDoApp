@@ -55,7 +55,6 @@ const App: React.FC = () => {
       AdEventType.LOADED,
       () => {
         setAdLoaded(true);
-        console.log('Interstitial ad loaded');
       }
     );
 
@@ -91,7 +90,6 @@ const App: React.FC = () => {
       if (adLoaded) {
         interstitial.show();
       } else {
-        console.log('Interstitial ad not loaded yet, will show when ready');
         const adLoadedListener = interstitial.addAdEventListener(
           AdEventType.LOADED,
           () => {
@@ -107,7 +105,6 @@ const App: React.FC = () => {
 
       if (type === EventType.DELIVERED) {
         // The notification has been delivered/displayed
-        console.log('Foreground notification delivered:', detail.notification);
         
         const taskId = detail.notification!.data!.taskId as string;
 
@@ -121,7 +118,6 @@ const App: React.FC = () => {
     });
 
     return () => {
-      console.log('Cleaning up foreground event listener');
       unsubscribe();
       adLoadListener();
       adCloseListener();

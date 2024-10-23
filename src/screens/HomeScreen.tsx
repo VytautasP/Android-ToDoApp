@@ -119,8 +119,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
   const scheduleTaskReminder = async (id: string, date: Date) => {
 
-    console.log(`Scheduling reminder for task with ID: ${id} at ${date}`);
-    
     const task = tasks.find((task) => task.id === id)!;
 
     // Create a channel (required for Android)
@@ -156,7 +154,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
       trigger
     );
 
-    console.log(`Scheduled reminder with ID: ${reminderId}`);
     task.reminderId = reminderId;
     task.reminderDate = format(date, "yyyy-MM-dd HH:mm:ss");
     saveTasks(TASKS_STORAGE_KEY, tasks);
@@ -179,7 +176,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
   const cancelTaskNotification = async (task: TaskType) => {
 
     if (task.reminderId) {
-      console.log(`Cancelling reminder with ID: ${task.reminderId}`);
       await notifee.cancelNotification(task.reminderId);
     }
   }

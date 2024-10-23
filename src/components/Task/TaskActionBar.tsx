@@ -51,8 +51,6 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
 
         const settings = await notifee.requestPermission();
 
-        console.log(settings.authorizationStatus);
-
         if (settings.authorizationStatus === AuthorizationStatus.DENIED) {
             Alert.alert('Error', 'Please enable alarm permission to schedule reminders.');
             return;
