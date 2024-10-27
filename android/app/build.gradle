@@ -83,8 +83,8 @@ android {
         applicationId "wy.zho.com.todoapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1 // Increment this for every release
-        versionName "1.0" // Update this as needed
+        versionCode 3 // Increment this for every release
+        versionName "1.1" // Update this as needed
     }
     signingConfigs {
         debug {

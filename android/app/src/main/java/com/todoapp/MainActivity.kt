@@ -1,4 +1,4 @@
-package com.todoapp
+package wy.zho.com.todoapp
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
