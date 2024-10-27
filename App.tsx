@@ -37,11 +37,10 @@ const App: React.FC = () => {
       count += 1;
 
       await AsyncStorage.setItem(APP_OPEN_COUNT_KEY, count.toString());
-
+      
       return count;
     } catch (e) {
-      console.error('Error accessing AsyncStorage:', e);
-      return 0;
+      return 1;
     }
   };
 
@@ -73,33 +72,32 @@ const App: React.FC = () => {
       }
     );
 
-    let appOpenCount = 0;
+    const showAdd = async () => {
 
-    const fetchAppOpens = async () => {
-      appOpenCount = await getAppOpens();
-    };
+       let appOpens = await getAppOpens();
+       let showAdd = appOpens % AD_SHOW_EVERY_OPEN === 0;
+       
+       if (showAdd) {
 
-    fetchAppOpens();
-
-    interstitial.load();
-
-    let showAdd = appOpenCount % AD_SHOW_EVERY_OPEN === 0;
-    
-    if (showAdd) {
-
-      if (adLoaded) {
-        interstitial.show();
-      } else {
-        const adLoadedListener = interstitial.addAdEventListener(
-          AdEventType.LOADED,
-          () => {
-            interstitial.show();
-            adLoadedListener(); // Remove listener after showing ad
-          }
-        );
+        if (adLoaded) {
+          interstitial.show();
+        } else {
+          const adLoadedListener = interstitial.addAdEventListener(
+            AdEventType.LOADED,
+            () => {
+              interstitial.show();
+              adLoadedListener(); // Remove listener after showing ad
+            }
+          );
+        }
+  
       }
 
-    }
+    };
+
+    showAdd();
+
+    interstitial.load();
 
     const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
 
