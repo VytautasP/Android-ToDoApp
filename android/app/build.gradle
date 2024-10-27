@@ -78,9 +78,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.todoapp"
+    namespace "wy.zho.com.todoapp"
     defaultConfig {
-        applicationId "com.todoapp"
+        applicationId "wy.zho.com.todoapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1 // Increment this for every release

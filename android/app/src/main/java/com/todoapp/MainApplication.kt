@@ -1,4 +1,4 @@
-package com.todoapp
+package wy.zho.com.todoapp
 
 import android.app.Application
 import com.facebook.react.PackageList
