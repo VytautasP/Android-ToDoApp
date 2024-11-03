@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import notifee, { EventType } from '@notifee/react-native';
 import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Orientation from 'react-native-orientation-locker';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -115,7 +116,10 @@ const App: React.FC = () => {
 
     });
 
+    Orientation.lockToPortrait();
+
     return () => {
+      Orientation.unlockAllOrientations();
       unsubscribe();
       adLoadListener();
       adCloseListener();
