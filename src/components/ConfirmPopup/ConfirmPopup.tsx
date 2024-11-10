@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { Modal, StyleProp, StyleSheet, Text, TextStyle, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import TouchableButton from '../button/TouchableButton';
 
 interface ConfirmPopupProprs {
@@ -9,11 +9,15 @@ interface ConfirmPopupProprs {
     onConfirm: () => void;
     OnCancel: () => void;
     children: React.ReactNode;
+    buttonOkStyle?: StyleProp<ViewStyle>;
+    buttonOkTextStyle?: StyleProp<TextStyle>;
+    buttonCancelStyle?: StyleProp<ViewStyle>;
+    buttonCancelTextStyle?: StyleProp<TextStyle>;
 }
 
 const ConfirmPopup: React.FC<ConfirmPopupProprs> = (props: ConfirmPopupProprs) => {
 
-  const { isModalVisible, title, subtitle, onConfirm, OnCancel, children } = props;
+  const { isModalVisible, title, subtitle, onConfirm, OnCancel, children, buttonOkStyle, buttonOkTextStyle, buttonCancelStyle, buttonCancelTextStyle } = props;
 
   return (
     <Modal
@@ -57,18 +61,20 @@ const ConfirmPopup: React.FC<ConfirmPopupProprs> = (props: ConfirmPopupProprs) =
             }
 
             <View style={styles.buttonContainer}>
-              <TouchableButton
-                buttonStyle={styles.modalButton}
-                buttonTextStyle={styles.modalButtonText}
-                text='OK'
-                onClick={onConfirm} />
 
               <TouchableButton
-                buttonStyle={styles.modalButton}
-                buttonTextStyle={styles.modalButtonText}
+                buttonStyle={[styles.modalButton, styles.buttonCancel, buttonCancelStyle]}
+                buttonTextStyle={[styles.modalButtonText, styles.buttonCancelText, buttonCancelTextStyle]}
                 text='Cancel'
                 onClick={OnCancel}
               />
+
+              <TouchableButton
+                buttonStyle={[styles.modalButton, buttonOkStyle]}
+                buttonTextStyle={[styles.modalButtonText, buttonOkTextStyle]}
+                text='OK'
+                onClick={onConfirm} />
+
             </View>
           </View>
         </View>
@@ -142,6 +148,14 @@ const styles = StyleSheet.create({
       marginHorizontal: 5,
       alignItems: 'center',
       height: 45
+    },
+    buttonCancel: {
+      borderWidth: 2,
+      borderColor: '#E1D8FD',
+      backgroundColor: 'transparent',
+    },
+    buttonCancelText :{
+      color: '#7C51FF'//'#AC91FE'
     },
     modalButtonText: {
       fontSize: 14,

@@ -63,18 +63,18 @@ const AddTaskModal: React.FC<AddTaskModalProps> = (props: AddTaskModalProps) => 
                         </View>
 
                         <View style={styles.buttonContainer}>
+                           <TouchableButton
+                                buttonStyle={[styles.modalButton, styles.buttonCancel]}
+                                buttonTextStyle={[styles.modalButtonText, styles.buttonCancelText]}
+                                text='Cancel'
+                                onClick={onModalClose}
+                            />
+
                             <TouchableButton
                                 buttonStyle={styles.modalButton}
                                 buttonTextStyle={styles.modalButtonText}
                                 text='OK'
                                 onClick={onModalConfirm} />
-
-                            <TouchableButton
-                                buttonStyle={styles.modalButton}
-                                buttonTextStyle={styles.modalButtonText}
-                                text='Cancel'
-                                onClick={onModalClose}
-                            />
                         </View>
                     </View>
                 </View>
@@ -139,6 +139,14 @@ const styles = StyleSheet.create({
     modalButtonText: {
       fontSize: 14,
       fontWeight: 'bold',
+    },
+    buttonCancel: {
+      borderWidth: 2,
+      borderColor: '#E1D8FD',
+      backgroundColor: 'transparent',
+    },
+    buttonCancelText :{
+      color: '#7C51FF'//'#AC91FE'
     }
   });
 

@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     },
     actionButton: {
       marginHorizontal: 5,
-    },
+    }
   });
   
 export default TaskActionBar;
