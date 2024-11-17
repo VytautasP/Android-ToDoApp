@@ -7,9 +7,8 @@ import { format, set } from 'date-fns';
 import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
 import TouchableButton from '../components/button/TouchableButton';
-import AddTaskModal from '../components/AddTaskModal/AddTaskModal';
+import CreateUpdateTaskModal from '../components/CreateUpdateTaskModal/CreateUpdateTaskModal';
 import "react-native-get-random-values";
-import { v4 as uuid } from 'uuid';
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 
 
@@ -47,7 +46,7 @@ interface HomeScreenProps {
 const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeScreenProps) => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [createUpdateTaskModalVisible, setCreateUpdateTaskModalVisible] = useState(false);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
@@ -65,19 +64,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
     fetchTasks();
   }, [deliveredNotifications]);
 
-  const onAddTask = (task: string, date: Date) => {
+  const onAddTask = (task: TaskType) => {
 
-    setModalVisible(false);
+    setCreateUpdateTaskModalVisible(false);
 
-    if (task.length > 0) 
+    if (task.title.length > 0) 
     {
-      const newTask = { 
-        id: uuid(),
-        title: task, 
-        completed: false, 
-        date: format(date, "yyyy-MM-dd") 
-      };
-      const newTasks = [...tasks, newTask];
+      const newTasks = [...tasks, task];
       setTasks(newTasks);
       saveTasks(TASKS_STORAGE_KEY, newTasks);
     } 
@@ -88,6 +81,41 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
   }
 
+  const onEditTask = async (task: TaskType) => {
+    
+    if (task.title.length < 1)
+    {
+      Alert.alert('Error', 'Task cannot be empty');
+      return;
+    }
+
+    const index = tasks.findIndex((t) => t.id === task.id);
+    const originalTask = tasks[index];
+
+    originalTask.title = task.title;
+    originalTask.date = task.date;
+    
+    const taskDateChanged = originalTask.date !== task.date;
+
+    if (taskDateChanged) {
+
+      await cancelTaskNotification(originalTask);
+      
+      const originalDate = new Date(originalTask.date);
+      const newTaskReminderDate = new Date(task.date);
+      set(newTaskReminderDate, { hours: originalDate.getHours(), minutes: originalDate.getMinutes() });
+
+      const reminderId = await AddTaskToScheduler(originalTask, newTaskReminderDate);
+
+      originalTask.reminderId = reminderId;
+      originalTask.reminderDate = format(newTaskReminderDate, "yyyy-MM-dd HH:mm:ss");
+
+    }
+
+    saveTasks(TASKS_STORAGE_KEY, tasks);
+    setTasks([...tasks]);
+}
+
   const completeTask = async (id: string) => {
     
     const index = tasks.findIndex((task) => task.id === id);
@@ -97,12 +125,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
     const newTasks = [...tasks];
     const completedTask = { ...newTasks[index], completed: true };
     newTasks.splice(index, 1);
-    setTasks(newTasks);
     saveTasks(TASKS_STORAGE_KEY, newTasks);
+    setTasks(newTasks);
 
     const newCompletedTasks = [...completedTasks, completedTask];
-    setCompletedTasks(newCompletedTasks);
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
+    setCompletedTasks(newCompletedTasks);
+
   };
 
   const deleteTask = async (id: string) => {
@@ -113,13 +142,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
-    setTasks(newTasks);
     saveTasks(TASKS_STORAGE_KEY, newTasks);
+    setTasks(newTasks);
+    
   };
 
   const scheduleTaskReminder = async (id: string, date: Date) => {
 
     const task = tasks.find((task) => task.id === id)!;
+    
+    const reminderId = await AddTaskToScheduler(task, date);
+
+    task.reminderId = reminderId;
+    task.reminderDate = format(date, "yyyy-MM-dd HH:mm:ss");
+    saveTasks(TASKS_STORAGE_KEY, tasks);
+    setTasks([...tasks]);
+  }
+
+  const AddTaskToScheduler = async (task: TaskType, date: Date) : Promise<string>  => {
 
     // Create a channel (required for Android)
     const channelId = await notifee.createChannel({
@@ -153,11 +193,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
       },
       trigger
     );
+    
+    if(__DEV__){
+      console.log('Task scheduled with reminderId: ', reminderId);
+      console.log('Task scheduled with date: ', date);
+    }
 
-    task.reminderId = reminderId;
-    task.reminderDate = format(date, "yyyy-MM-dd HH:mm:ss");
-    saveTasks(TASKS_STORAGE_KEY, tasks);
-    setTasks([...tasks]);
+    return reminderId;
+
   }
 
   const cancelScheduleTaskReminder = async (id: string) => {
@@ -165,34 +208,41 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
     await cancelTaskNotification(task);
 
-    if (task.reminderId) {
-      task.reminderId = undefined;
-      task.reminderDate = undefined;
-      saveTasks(TASKS_STORAGE_KEY, tasks);
-      setTasks([...tasks]);
-    }
+    saveTasks(TASKS_STORAGE_KEY, tasks);
+    setTasks([...tasks]);
   }
 
   const cancelTaskNotification = async (task: TaskType) => {
 
     if (task.reminderId) {
       await notifee.cancelNotification(task.reminderId);
+
+      task.reminderId = undefined;
+      task.reminderDate = undefined;
     }
   }
 
   return (
     <View style={styles.container}>
-      <TaskList tasks={tasks} completeTask={completeTask} deleteTask={deleteTask} scheduleTask={scheduleTaskReminder} cancelScheduleTask={cancelScheduleTaskReminder}/>
+
+      <TaskList 
+         tasks={tasks} 
+         completeTask={completeTask}
+         editTask={onEditTask} 
+         deleteTask={deleteTask} 
+         scheduleTask={scheduleTaskReminder} 
+         cancelScheduleTask={cancelScheduleTaskReminder} />
+
       <View>
-        <TouchableButton text="Add" onClick={() => setModalVisible(true)} />
+        <TouchableButton text="Add" onClick={() => setCreateUpdateTaskModalVisible(true)} />
         <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
       </View>
 
       {/* Modal for adding task */}
-      <AddTaskModal
-        isModalVisible={modalVisible}
+      <CreateUpdateTaskModal
+        isModalVisible={createUpdateTaskModalVisible}
         onConfirm={onAddTask}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setCreateUpdateTaskModalVisible(false)}
       />
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import IconCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,17 +8,20 @@ import { TaskType } from '../../models/task';
 import notifee, { AuthorizationStatus } from '@notifee/react-native';
 import ConfirmPopup from '../ConfirmPopup/ConfirmPopup';
 import DatePicker from 'react-native-date-picker';
+import CreateUpdateTaskModal from '../CreateUpdateTaskModal/CreateUpdateTaskModal';
 
 interface TaskActionBarProps {
     task: TaskType;
     completeTask: (id: string) => void;
+    editTask: (task: TaskType) => void;
     deleteTask: (id: string) => void;
     scheduleTask: (id: string, reminderDate: Date) => void;
     cancelScheduleTask: (id: string) => void;
 }
 
-const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, deleteTask, scheduleTask, cancelScheduleTask }: TaskActionBarProps) => {
+const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask }: TaskActionBarProps) => {
     const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
+    const [isEditTaskModalVisible, setIsEditTaskModalVisible] = useState(false);
     const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
     const [isScheduleTaskModalVisible, setScheduleTaskModalVisible] = useState(false);
     const [isCancelScheduleTaskModalVisible, setCancelScheduleTaskModalVisible] = useState(false);
@@ -40,6 +43,11 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
     const onCancelReminder = () => {
        setCancelScheduleTaskModalVisible(false)
        cancelScheduleTask(task.id);
+    }
+
+    const onEditTask = (taskEdit : TaskType) => {
+        setIsEditTaskModalVisible(false);
+        editTask(taskEdit);
     }
 
     const onScheduleTaskButtonPress = async () => {
@@ -92,6 +100,11 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                     <Icon name="check-circle" size={20} color="green" />
                 </TouchableOpacity>
 
+                {/* Edit task button */}
+                <TouchableOpacity onPress={() => setIsEditTaskModalVisible(true)} style={styles.actionButton}>
+                    <IconCommunity name="pencil" size={20} color="#0264bf" />
+                </TouchableOpacity>
+
                 {/* Delete task button */}
                 <TouchableOpacity onPress={() => setIsDeleteTaskModalVisible(true)} style={styles.actionButton}>
                     <IconCommunity name="delete-circle" size={20} color="red" />
@@ -100,7 +113,14 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 {/* Schedule task button */}
                 <TouchableOpacity onPress={() => onScheduleTaskButtonPress()} style={styles.actionButton}>
                     {isTaskScheduled()
-                        ? (<Ionicon name="notifications-off-sharp" size={20} color="#6200ee" />)
+                        ? (
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicon name="notifications-off-sharp" size={20} color="#6200ee" />
+                                <Text style={{ marginLeft: 5, color: '#6200ee', fontSize: 12 }}>
+                                    {task.reminderDate ? `${new Date(task.reminderDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}` : ''}
+                                </Text>
+                            </View>
+                        )
                         : (<Icon name="notifications" size={20} color="#6200ee" />)
                     }
                 </TouchableOpacity>
@@ -117,6 +137,14 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
             >
                 <IconFeather name="check-circle" size={60} color="green" />
             </ConfirmPopup>
+
+            {/* Modal for editing task */}
+            <CreateUpdateTaskModal
+                isModalVisible={isEditTaskModalVisible}
+                onConfirm={onEditTask}
+                onClose={() => setIsEditTaskModalVisible(false)}
+                taskToEdit={task}
+            />
 
             {/* Delete Task confirm Modal */}
             <ConfirmPopup
@@ -136,7 +164,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, delet
                 OnCancel={() => { setScheduleTaskModalVisible(false) }}
                 subtitle='Select the time to schedule the reminder.'
             >
-                <DatePicker theme="light" date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6' />
+                <DatePicker theme="light" date={getCurrentTaskDate()} mode="time" onDateChange={setReminderDate} dividerColor='#c6c6c6'/>
             </ConfirmPopup>
 
             {/* Cancel scheduled Task Modal */}

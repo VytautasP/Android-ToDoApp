@@ -6,12 +6,13 @@ import TaskActionBar from './TaskActionBar';
 interface TaskProps {
   task: TaskType;
   completeTask: (id: string) => void;
+  editTask: (task: TaskType) => void;
   deleteTask: (id: string) => void;
   scheduleTask: (id: string, reminderDate: Date) => void;
   cancelScheduleTask: (id: string) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskProps) => {
+const Task: React.FC<TaskProps> = ({ task, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskProps) => {
 
   const [expanded, setExpanded] = useState(false);
 
@@ -24,7 +25,13 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, deleteTask, scheduleTas
     <>
       <View style={styles.taskContainer}>
          
-         <TaskActionBar task={task} completeTask={completeTask} deleteTask={deleteTask} scheduleTask={scheduleTask} cancelScheduleTask={cancelScheduleTask} />
+         <TaskActionBar 
+           task={task} 
+           completeTask={completeTask} 
+           editTask={editTask}
+           deleteTask={deleteTask} 
+           scheduleTask={scheduleTask} 
+           cancelScheduleTask={cancelScheduleTask} />
 
         {/* Content Area */}
         <TouchableOpacity onPress={toggleExpanded} style={styles.contentArea}>

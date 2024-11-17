@@ -7,12 +7,13 @@ import globalStyles from '../../style/style'
 interface TaskListProps {
     tasks: TaskType[];
     completeTask: (id: string) => void;
+    editTask: (task: TaskType) => void;
     deleteTask: (id: string) => void;
     scheduleTask: (id: string, reminderDate: Date) => void;
     cancelScheduleTask: (id: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskListProps) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskListProps) => {
 
     const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
@@ -21,7 +22,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask, sc
 
     return (
         <>
-            <Text style={[styles.title, globalStyles.textColor]}>To-Do List</Text>
+            {/* <Text style={[styles.title, globalStyles.textColor]}>To-Do List</Text> */}
             <ScrollView style={styles.scrollView}>
                 {Object.keys(groupedTasks).map((date) => (
                     <View key={date}>
@@ -31,6 +32,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, deleteTask, sc
                                 key={task.id}
                                 task={task}
                                 completeTask={completeTask}
+                                editTask={editTask}
                                 deleteTask={deleteTask}
                                 scheduleTask={scheduleTask}
                                 cancelScheduleTask={cancelScheduleTask}
