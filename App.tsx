@@ -131,13 +131,14 @@ const App: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home">
+        <Stack.Screen name="Home" options={{title: 'To-Do list'}}>
           {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} />}
         </Stack.Screen>
         <Stack.Screen
           name="History"
           component={HistoryScreen}
           options={({ navigation }) => ({
+            title: 'Completed tasks history',
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
                 <Icon name="arrow-back" size={30} color="#6200ee" />
