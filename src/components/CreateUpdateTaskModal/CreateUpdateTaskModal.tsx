@@ -63,7 +63,7 @@ const CreateUpdateTaskModal: React.FC<CreateUpdateTaskModalProps> = (props: Crea
       <TouchableWithoutFeedback onPress={onModalClose}>
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={[styles.modalTitle, globalStyles.textColor]}>{taskToEdit ? "Edit task" : "Task Description"}</Text>
+            <Text style={[styles.modalTitle, globalStyles.textColor]}>{taskToEdit ? "Edit task" : "New task description"}</Text>
 
             {/* Line */}
             <View
