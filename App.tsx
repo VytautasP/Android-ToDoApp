@@ -1,18 +1,16 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/screens/HomeScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
-import { RootStackParamList } from './src/navigation/types';
-import { TouchableOpacity } from 'react-native';
-import Icon  from 'react-native-vector-icons/MaterialIcons';
 import { useEffect, useState } from 'react';
 import notifee, { EventType } from '@notifee/react-native';
 import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Orientation from 'react-native-orientation-locker';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
 export const APP_OPEN_COUNT_KEY = '@todo-completed-tasks-app-open_counter';
 export const APP_ADMOB_INTERSTITIAL_ID = 'ca-app-pub-9160717670483486/6469333363'
@@ -130,23 +128,25 @@ const App: React.FC = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" options={{title: 'To-Do list'}}>
+      <Tab.Navigator initialRouteName="Tasks">
+        <Tab.Screen name="Tasks"
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
+            )
+          }}
+        >
           {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} />}
-        </Stack.Screen>
-        <Stack.Screen
-          name="History"
+        </Tab.Screen>
+        <Tab.Screen name="History"
           component={HistoryScreen}
-          options={({ navigation }) => ({
-            title: 'Completed tasks history',
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-                <Icon name="arrow-back" size={30} color="#6200ee" />
-              </TouchableOpacity>
-            ),
-          })}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="history" color={color} size={size} />
+            )
+          }}
         />
-      </Stack.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };

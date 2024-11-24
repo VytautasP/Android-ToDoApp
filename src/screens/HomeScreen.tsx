@@ -11,7 +11,6 @@ import CreateUpdateTaskModal from '../components/CreateUpdateTaskModal/CreateUpd
 import "react-native-get-random-values";
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 
-
 export const TASKS_STORAGE_KEY = '@todo-tasks-storage';
 export const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
 
@@ -235,7 +234,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
       <View>
         <TouchableButton text="Add" onClick={() => setCreateUpdateTaskModalVisible(true)} />
-        <TouchableButton text="View History" onClick={() => navigation.navigate('History')} />
       </View>
 
       {/* Modal for adding task */}
