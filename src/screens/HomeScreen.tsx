@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../navigation/types';
 import { format, set } from 'date-fns';
 import { TaskType } from '../models/task';
 import TaskList from '../components/TaskList/TaskList';
@@ -10,6 +8,8 @@ import TouchableButton from '../components/button/TouchableButton';
 import CreateUpdateTaskModal from '../components/CreateUpdateTaskModal/CreateUpdateTaskModal';
 import "react-native-get-random-values";
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import SwitchSelector from 'react-native-switch-selector';
+import Task from '../components/Task/Task';
 
 export const TASKS_STORAGE_KEY = '@todo-tasks-storage';
 export const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
@@ -37,6 +37,11 @@ export const saveTasks = async (key: string, tasks: TaskType[]) => {
   }
 };
 
+enum TaskViewType {
+  Full = 'Full',
+  Month = 'Month'
+}
+
 
 interface HomeScreenProps {
   deliveredNotifications: string[];
@@ -46,8 +51,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
   const [createUpdateTaskModalVisible, setCreateUpdateTaskModalVisible] = useState(false);
-
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
   useEffect(() => {
 
@@ -223,6 +226,22 @@ const HomeScreen: React.FC<HomeScreenProps> = ({deliveredNotifications} : HomeSc
 
   return (
     <View style={styles.container}>
+      <View style={styles.taskViewOptions}>
+        <SwitchSelector
+          options={[
+            { label: "Full", value: TaskViewType.Full },
+            { label: "Month", value: TaskViewType.Month }
+          ]}
+          initial={0}
+          selectedColor={'#FFFFFF'}
+          borderWidth={1}
+          buttonColor={'#6200ee'}
+          borderColor={'#6200ee'}
+          hasPadding
+          buttonMargin={2}
+          onPress={value => console.log(`Call onPress with value: ${value}`)}
+        />
+      </View>
 
       <TaskList 
          tasks={tasks} 
@@ -251,6 +270,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+  },
+  taskViewOptions: {
+    marginBottom: 20
   }
 });
 
