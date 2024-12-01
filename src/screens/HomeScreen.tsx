@@ -250,7 +250,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
           cancelScheduleTask={cancelScheduleTaskReminder} />
 
         <TouchableOpacity style={styles.floatingButton} onPress={() => setCreateUpdateTaskModalVisible(true)}>
-          <Ionicon style={{ width: 60, height: 60,}} size={60} name="add-circle" color="#6200ee"/>
+          <Ionicon style={{ width: 60, height: 60}} size={60} name="add-circle" color="#6200ee"/>
         </TouchableOpacity>
 
         {/* Modal for adding task */}
@@ -271,7 +271,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   taskViewOptions: {
-    marginBottom: 20
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 30,
+    elevation: 10
   },
   floatingButton: {
     position: 'absolute',
@@ -282,7 +287,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     bottom: 10,
-    right: 20
+    right: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 30,
+    elevation: 10
   }
 });
 
