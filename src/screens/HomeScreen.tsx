@@ -66,7 +66,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
     fetchTasks();
   }, [deliveredNotifications]);
 
-  const onAddTask = (task: TaskType) => {
+  const onAddTask = (task: TaskType) : void => {
 
     setCreateUpdateTaskModalVisible(false);
 
@@ -81,7 +81,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
 
   }
 
-  const onEditTask = async (task: TaskType) => {
+  const onEditTask = async (task: TaskType) : Promise<void>  => {
 
     if (task.title.length < 1) {
       Alert.alert('Error', 'Task cannot be empty');
@@ -115,7 +115,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
     setTasks([...tasks]);
   }
 
-  const completeTask = async (id: string) => {
+  const completeTask = async (id: string) : Promise<void>  => {
 
     const index = tasks.findIndex((task) => task.id === id);
     const task = tasks[index];
@@ -133,7 +133,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
 
   };
 
-  const deleteTask = async (id: string) => {
+  const deleteTask = async (id: string) : Promise<void> => {
     const index = tasks.findIndex((task) => task.id === id);
     const task = tasks[index];
 
@@ -146,7 +146,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
 
   };
 
-  const scheduleTaskReminder = async (id: string, date: Date) => {
+  const scheduleTaskReminder = async (id: string, date: Date) : Promise<void>  => {
 
     const task = tasks.find((task) => task.id === id)!;
 
@@ -202,7 +202,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
 
   }
 
-  const cancelScheduleTaskReminder = async (id: string) => {
+  const cancelScheduleTaskReminder = async (id: string) : Promise<void> => {
     const task = tasks.find((task) => task.id === id)!;
 
     await cancelTaskNotification(task);
@@ -211,7 +211,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
     setTasks([...tasks]);
   }
 
-  const cancelTaskNotification = async (task: TaskType) => {
+  const cancelTaskNotification = async (task: TaskType) : Promise<void> => {
 
     if (task.reminderId) {
       await notifee.cancelNotification(task.reminderId);

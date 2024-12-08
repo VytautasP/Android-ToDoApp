@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import HomeScreen from './src/screens/HomeScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Orientation from 'react-native-orientation-locker';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CompletedTasksScreen from './src/screens/CompletedTasksScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,10 @@ export const APP_OPEN_COUNT_KEY = '@todo-completed-tasks-app-open_counter';
 export const APP_ADMOB_INTERSTITIAL_ID = 'ca-app-pub-9160717670483486/6469333363'
 export const AD_SHOW_EVERY_OPEN = 3;
 
+const navigationRef = React.createRef<NavigationContainerRef<any>>();
+export function navigate(name: string, params : any) {
+  navigationRef.current?.navigate(name, params);
+}
 
 const App: React.FC = () => {
 
@@ -127,7 +132,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Tab.Navigator initialRouteName="Tasks">
         <Tab.Screen name="Tasks"
           options={{
@@ -146,6 +151,9 @@ const App: React.FC = () => {
             )
           }}
         />
+        <Tab.Screen name="CompletedTasks" options={{ tabBarButton: () => null }} >
+          {(props) => <CompletedTasksScreen {...props} route={{ ...props.route, params: { completionDate: '', completedTasks: [] } }} />}
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
   );

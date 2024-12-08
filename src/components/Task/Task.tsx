@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Alert } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { TaskType } from '../../models/task';
 import TaskActionBar from './TaskActionBar';
+import TaskContentBox from './TaskContentBox';
 
 interface TaskProps {
   task: TaskType;
@@ -13,13 +14,6 @@ interface TaskProps {
 }
 
 const Task: React.FC<TaskProps> = ({ task, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskProps) => {
-
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpanded = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(!expanded);
-  };
 
   return (
     <>
@@ -34,15 +28,8 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, editTask, deleteTask, s
            cancelScheduleTask={cancelScheduleTask} />
 
         {/* Content Area */}
-        <TouchableOpacity onPress={toggleExpanded} style={styles.contentArea}>
-          <Text style={task.completed ? styles.taskTextCompleted : styles.taskText}>
-            {expanded || task.title.length < 35 ? task.title : task.title.slice(0, 35) + '...'}
-          </Text>
-        </TouchableOpacity>
+        <TaskContentBox task={task}  />
       </View>
-
-      
-
     </>
   );
 };
@@ -57,22 +44,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
-  },
-  contentArea: {
-    padding: 15,
-    backgroundColor: '#f9f9f9',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  taskText: {
-    fontSize: 16,
-    color: '#333'
-  },
-  taskTextCompleted: {
-    fontSize: 16,
-    textDecorationLine: 'line-through',
-    color: 'gray'
-  },
+  }
 });
 
 export default Task;

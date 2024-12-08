@@ -1,27 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { generateDateGridForMonth, getPreviousMonth, getNextMonth } from '../utils/utils';
-import { format } from 'date-fns';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import TaskHistoryGrid from '../components/TaskHistory/TaskHistoryGrid';
-import TaskHistoryDetails from '../components/TaskHistory/TaskHistoryDetails';
 import globalStyles from '../style/style'
 import { COMPLETED_TASKS_STORAGE_KEY } from './HomeScreen';
-
-interface TaskType {
-  title: string;
-  completed: boolean;
-  date: string;
-}
-
-;
+import { TaskType } from '../models/task';
+import { Calendar } from 'react-native-calendars';
+import { navigate } from '../../App';
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
     const tasksString = await AsyncStorage.getItem(COMPLETED_TASKS_STORAGE_KEY);
     if (tasksString !== null) {
-      return JSON.parse(tasksString);
+      const result = JSON.parse(tasksString);
+      return result;
     }
   } catch (error) {
     console.error('Failed to load completed tasks from storage:', error);
@@ -31,71 +22,47 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 
 const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [dateGrid, setDateGrid] = useState(generateDateGridForMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
       const loadedCompletedTasks = await loadCompletedTasks();
       setCompletedTasks(loadedCompletedTasks);
-
-      // Map tasks to the date grid
-      const taskCountMap: { [key: string]: number } = {};
-      loadedCompletedTasks.forEach(task => {
-        if (!taskCountMap[task.date]) {
-          taskCountMap[task.date] = 0;
-        }
-        taskCountMap[task.date] += 1;
-      });
-
-      const updatedDateGrid = generateDateGridForMonth(currentMonth).map(day => ({
-        ...day,
-        count: taskCountMap[day.date] || 0,
-      }));
-
-      setDateGrid(updatedDateGrid);
     };
 
     fetchCompletedTasks();
     
-  }, [currentMonth]);
+  }, []);
 
-  const handlePreviousMonth = () => {
-    setCurrentMonth(getPreviousMonth(currentMonth));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(getNextMonth(currentMonth));
-  };
-
-  const handleDayPress = (date: string) => {
+  const handleDayPress = (date: string) : void => {
     setSelectedDate(date);
-    setModalVisible(true);
+    const tasks = getTasksForSelectedDate();
+    navigate('CompletedTasks', { completionDate: date, completedTasks: tasks});
   };
 
-  const tasksForSelectedDate = completedTasks.filter(task => task.date === selectedDate);
+  const getTasksForSelectedDate = () : TaskType[] =>{ 
+     const tasksForDate = completedTasks.filter(task => task.date === selectedDate)
+
+      return tasksForDate;
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, globalStyles.textColor]}>Completed Tasks History</Text>
-      <View style={styles.navigationContainer}>
-        <TouchableOpacity onPress={handlePreviousMonth}>
-          <Icon name="arrow-back" size={30} color="#6200ee" />
-        </TouchableOpacity>
-        <Text style={[styles.monthLabel, globalStyles.textColor]}>{format(currentMonth, 'MMMM yyyy')}</Text>
-        <TouchableOpacity onPress={handleNextMonth}>
-          <Icon name="arrow-forward" size={30} color="#6200ee" />
-        </TouchableOpacity>
-      </View>
-      <TaskHistoryGrid completedTasks={dateGrid} handleDayPress={handleDayPress} />
-      <TaskHistoryDetails
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        selectedDate={selectedDate}
-        tasksForSelectedDate={tasksForSelectedDate}
+      <Calendar
+        style={{
+          height: 320
+        }}
+        onDayPress={(day: any) => handleDayPress(day.dateString)}
+
+        //IMPORTANT: This is just for testing purposes. Remove this code when done testing.
+        markedDates={{
+          '2024-12-05': { selected: true, selectedColor: '#40c463' },
+          '2024-12-15': { selected: true, selectedColor: '#30a14e' }
+        }}
+
       />
+
+      <Text style={[styles.title, globalStyles.textColor]}>Completed Tasks History Summary</Text>
     </View>
   );
 };
