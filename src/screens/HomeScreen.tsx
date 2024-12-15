@@ -10,6 +10,7 @@ import "react-native-get-random-values";
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import SwitchSelector from 'react-native-switch-selector';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
+import { Colors } from '../constants/colors';
 
 export const TASKS_STORAGE_KEY = '@todo-tasks-storage';
 export const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
@@ -233,8 +234,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
             initial={0}
             selectedColor={'#FFFFFF'}
             borderWidth={1}
-            buttonColor={'#6200ee'}
-            borderColor={'#6200ee'}
+            buttonColor={ Colors.Primary }
+            borderColor={ Colors.Primary }
             hasPadding
             buttonMargin={2}
             onPress={value => console.log(`Call onPress with value: ${value}`)}
@@ -250,7 +251,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
           cancelScheduleTask={cancelScheduleTaskReminder} />
 
         <TouchableOpacity style={styles.floatingButton} onPress={() => setCreateUpdateTaskModalVisible(true)}>
-          <Ionicon style={{ width: 60, height: 60}} size={60} name="add-circle" color="#6200ee"/>
+          <Ionicon style={{ width: 60, height: 60}} size={60} name="add-circle" color={Colors.Primary}/>
         </TouchableOpacity>
 
         {/* Modal for adding task */}
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.ScreensBackground,
   },
   taskViewOptions: {
     marginBottom: 20,

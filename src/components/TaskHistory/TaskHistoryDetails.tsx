@@ -4,6 +4,7 @@ import globalStyles from '../../style/style'
 import { TaskType } from '../../models/task';
 import TaskContentBox from '../Task/TaskContentBox';
 import MasonryList from '@react-native-seoul/masonry-list';
+import { Colors } from '../../constants/colors';
 
 interface ModalBoxProps {
   modalVisible: boolean;
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     padding: 10,
-    backgroundColor: '#6200ee',
+    backgroundColor: Colors.Primary,
     borderRadius: 5,
   },
   closeButtonText: {

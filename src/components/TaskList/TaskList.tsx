@@ -13,8 +13,8 @@ interface TaskListProps {
     cancelScheduleTask: (id: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } : TaskListProps) => {
-
+const TaskList: React.FC<TaskListProps> = ( props : TaskListProps) => {
+    const { tasks, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } = props;
     const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
         return acc;

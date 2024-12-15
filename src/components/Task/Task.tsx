@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { TaskType } from '../../models/task';
 import TaskActionBar from './TaskActionBar';
 import TaskContentBox from './TaskContentBox';
+import { Colors } from '../../constants/colors';
 
 interface TaskProps {
   task: TaskType;
@@ -37,7 +38,7 @@ const Task: React.FC<TaskProps> = ({ task, completeTask, editTask, deleteTask, s
 const styles = StyleSheet.create({
   taskContainer: {
     margin: 10,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.TaskContentBackground,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

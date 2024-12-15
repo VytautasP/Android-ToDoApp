@@ -6,6 +6,7 @@ import { COMPLETED_TASKS_STORAGE_KEY } from './HomeScreen';
 import { TaskType } from '../models/task';
 import { Calendar } from 'react-native-calendars';
 import { navigate } from '../../App';
+import { Colors } from '../constants/colors';
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -22,8 +23,7 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 
 const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-
+ 
   useEffect(() => {
     const fetchCompletedTasks = async () => {
       const loadedCompletedTasks = await loadCompletedTasks();
@@ -35,13 +35,13 @@ const HistoryScreen: React.FC = () => {
   }, []);
 
   const handleDayPress = (date: string) : void => {
-    setSelectedDate(date);
-    const tasks = getTasksForSelectedDate();
-    navigate('CompletedTasks', { completionDate: date, completedTasks: tasks});
+    const tasks = getTasksForSelectedDate(date);
+    const viewParams = { completionDate: date, completedTasks: tasks };
+    navigate('CompletedTasks', viewParams);
   };
 
-  const getTasksForSelectedDate = () : TaskType[] =>{ 
-     const tasksForDate = completedTasks.filter(task => task.date === selectedDate)
+  const getTasksForSelectedDate = (date: string) : TaskType[] =>{ 
+     const tasksForDate = completedTasks.filter(task => task.date === date)
 
       return tasksForDate;
   };
@@ -56,8 +56,8 @@ const HistoryScreen: React.FC = () => {
 
         //IMPORTANT: This is just for testing purposes. Remove this code when done testing.
         markedDates={{
-          '2024-12-05': { selected: true, selectedColor: '#40c463' },
-          '2024-12-15': { selected: true, selectedColor: '#30a14e' }
+          '2024-12-05': { selected: true, selectedColor: Colors.Primary },
+          '2024-12-15': { selected: true, selectedColor: Colors.Primary }
         }}
 
       />
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.ScreensBackground,
   },
   title: {
     fontSize: 32,

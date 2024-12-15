@@ -9,6 +9,7 @@ import notifee, { AuthorizationStatus } from '@notifee/react-native';
 import ConfirmPopup from '../ConfirmPopup/ConfirmPopup';
 import DatePicker from 'react-native-date-picker';
 import CreateUpdateTaskModal from '../CreateUpdateTaskModal/CreateUpdateTaskModal';
+import { Colors } from '../../constants/colors';
 
 interface TaskActionBarProps {
     task: TaskType;
@@ -97,17 +98,17 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editT
 
                 {/* Complete task button */}
                 <TouchableOpacity onPress={() => setIsCompleteTaskModalVisible(true)} style={styles.actionButton}>
-                    <Icon name="check-circle" size={20} color="green" />
+                    <Icon name="check-circle" size={20} color={Colors.CompleteTaskButton} />
                 </TouchableOpacity>
 
                 {/* Edit task button */}
                 <TouchableOpacity onPress={() => setIsEditTaskModalVisible(true)} style={styles.actionButton}>
-                    <IconCommunity name="pencil" size={20} color="#0264bf" />
+                    <IconCommunity name="pencil" size={20} color={Colors.EditTaskButton} />
                 </TouchableOpacity>
 
                 {/* Delete task button */}
                 <TouchableOpacity onPress={() => setIsDeleteTaskModalVisible(true)} style={styles.actionButton}>
-                    <IconCommunity name="delete-circle" size={20} color="red" />
+                    <IconCommunity name="delete-circle" size={20} color={Colors.DeleteTaskButton} />
                 </TouchableOpacity>
 
                 {/* Schedule task button */}
@@ -115,13 +116,13 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editT
                     {isTaskScheduled()
                         ? (
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicon name="notifications-off-sharp" size={20} color="#6200ee" />
-                                <Text style={{ marginLeft: 5, color: '#6200ee', fontSize: 12 }}>
+                                <Ionicon name="notifications-off-sharp" size={20} color={Colors.Primary} />
+                                <Text style={{ marginLeft: 5, color: Colors.Primary, fontSize: 12 }}>
                                     {task.reminderDate ? `${new Date(task.reminderDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}` : ''}
                                 </Text>
                             </View>
                         )
-                        : (<Icon name="notifications" size={20} color="#6200ee" />)
+                        : (<Icon name="notifications" size={20} color={Colors.Primary} />)
                     }
                 </TouchableOpacity>
 
@@ -135,7 +136,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editT
                 title="Complete task?"
                 subtitle="Task will be removed from the list and moved to history."
             >
-                <IconFeather name="check-circle" size={60} color="green" />
+                <IconFeather name="check-circle" size={60} color={Colors.ConfirmColor} />
             </ConfirmPopup>
 
             {/* Modal for editing task */}
@@ -154,7 +155,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editT
                 title="Delete task?"
                 subtitle="Task will be removed from the list."
             >
-                <IconFeather name="alert-triangle" size={60} color="orange" />
+                <IconFeather name="alert-triangle" size={60} color={Colors.AlertColor} />
             </ConfirmPopup>
 
             {/* Schedule Task Modal */}
@@ -175,7 +176,7 @@ const TaskActionBar: React.FC<TaskActionBarProps> = ({ task, completeTask, editT
                 title="Cancel reminder?"
                 subtitle="Remainder notification will be removed from schedule manager."
             >
-                <IconFeather name="alert-triangle" size={60} color="orange" />
+                <IconFeather name="alert-triangle" size={60} color={Colors.AlertColor} />
             </ConfirmPopup>
 
         </>
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'center',
       padding: 4,
-      backgroundColor: '#e0e0e0',
+      backgroundColor: Colors.ActionBarBackground,
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,
     },
