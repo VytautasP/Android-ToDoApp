@@ -10,6 +10,9 @@ import Orientation from 'react-native-orientation-locker';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CompletedTasksScreen from './src/screens/CompletedTasksScreen';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
+import { Colors } from './src/constants/colors';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +21,7 @@ export const APP_ADMOB_INTERSTITIAL_ID = 'ca-app-pub-9160717670483486/6469333363
 export const AD_SHOW_EVERY_OPEN = 3;
 
 const navigationRef = React.createRef<NavigationContainerRef<any>>();
-export function navigate(name: string, params : any) {
+export function navigate(name: string, params: any) {
   navigationRef.current?.navigate(name, params);
 }
 
@@ -26,22 +29,22 @@ const App: React.FC = () => {
 
   const [adLoaded, setAdLoaded] = useState(false)
   const [deliveredNotifications, setDeliveredNotifications] = React.useState<string[]>([]);
-  
+
   //const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
-  
+
   const adUnitId = TestIds.INTERSTITIAL;
 
   //const adUnitId = 'ca-app-pub-9160717670483486/6469333363';
 
   const getAppOpens = async (): Promise<number> => {
-    
+
     try {
       const value = await AsyncStorage.getItem(APP_OPEN_COUNT_KEY);
       let count = value ? parseInt(value, 10) : 0;
       count += 1;
 
       await AsyncStorage.setItem(APP_OPEN_COUNT_KEY, count.toString());
-      
+
       return count;
     } catch (e) {
       return 1;
@@ -78,10 +81,10 @@ const App: React.FC = () => {
 
     const showAdd = async () => {
 
-       let appOpens = await getAppOpens();
-       let showAdd = appOpens % AD_SHOW_EVERY_OPEN === 0;
-       
-       if (showAdd) {
+      let appOpens = await getAppOpens();
+      let showAdd = appOpens % AD_SHOW_EVERY_OPEN === 0;
+
+      if (showAdd) {
 
         if (adLoaded) {
           interstitial.show();
@@ -94,7 +97,7 @@ const App: React.FC = () => {
             }
           );
         }
-  
+
       }
 
     };
@@ -107,7 +110,7 @@ const App: React.FC = () => {
 
       if (type === EventType.DELIVERED) {
         // The notification has been delivered/displayed
-        
+
         const taskId = detail.notification!.data!.taskId as string;
 
         setDeliveredNotifications((prev) => {
@@ -132,30 +135,43 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <NavigationContainer ref={navigationRef}>
-      <Tab.Navigator initialRouteName="Tasks">
-        <Tab.Screen name="Tasks"
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer ref={navigationRef}>
+        <Tab.Navigator initialRouteName="Tasks">
+          <Tab.Screen name="Tasks"
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
+              )
+            }}
+          >
+            {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} />}
+          </Tab.Screen>
+          <Tab.Screen name="History"
+            component={HistoryScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="history" color={color} size={size} />
+              )
+            }}
+          />
+          <Tab.Screen name="CompletedTasks" options={({ navigation }) => ({
+            title: 'Completed tasks',
+            tabBarButton: () => null,
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('History')} style={{ marginLeft: 10 }}>
+                <MaterialIcon name="arrow-back" size={30} color={Colors.Primary} />
+              </TouchableOpacity>
             )
-          }}
-        >
-          {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} />}
-        </Tab.Screen>
-        <Tab.Screen name="History"
-          component={HistoryScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="history" color={color} size={size} />
-            )
-          }}
-        />
-        <Tab.Screen name="CompletedTasks" options={{ tabBarButton: () => null }} >
-          {(props) => <CompletedTasksScreen {...props} route={{ ...props.route, params: { completionDate: '', completedTasks: [] } }} />}
-        </Tab.Screen>
-      </Tab.Navigator>
-    </NavigationContainer>
+          })
+          } >
+            {(props) => (
+              <CompletedTasksScreen {...props} route={{ ...props.route, params: { completionDate: '', completedTasks: [] } }} />
+            )}
+          </Tab.Screen>
+        </Tab.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 
