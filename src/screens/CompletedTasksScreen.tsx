@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   taskContentBox: {
-    backgroundColor: Colors.TaskContentBackground,
+    backgroundColor: Colors.TaskContentBackgroundCompleted,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
     

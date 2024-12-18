@@ -137,11 +137,11 @@ const App: React.FC = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer ref={navigationRef}>
-        <Tab.Navigator initialRouteName="Tasks">
+        <Tab.Navigator initialRouteName="Tasks" screenOptions={{tabBarActiveTintColor: Colors.Primary}}>
           <Tab.Screen name="Tasks"
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="playlist-check" color={color} size={size} />
+              tabBarIcon: ({focused, color, size }) => (
+                <MaterialCommunityIcons name="playlist-check" color={focused ? Colors.Primary : color} size={size} />
               )
             }}
           >
@@ -150,8 +150,8 @@ const App: React.FC = () => {
           <Tab.Screen name="History"
             component={HistoryScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="history" color={color} size={size} />
+              tabBarIcon: ({ focused, color, size }) => (
+                <MaterialCommunityIcons name="history" color={focused ? Colors.Primary : color} size={size} />
               )
             }}
           />
