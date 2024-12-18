@@ -7,6 +7,8 @@ import { TaskType } from '../models/task';
 import { Calendar } from 'react-native-calendars';
 import { navigate } from '../../App';
 import { Colors } from '../constants/colors';
+import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
+import { MarkedDates } from 'react-native-calendars/src/types';
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -46,21 +48,43 @@ const HistoryScreen: React.FC = () => {
       return tasksForDate;
   };
 
+  const getDayColor = (completedTasksCount: number) => {
+    if (completedTasksCount > 10) return Colors.Primary;
+    if (completedTasksCount > 7) return Colors.PrimaryMidTone;
+    if (completedTasksCount > 5) return Colors.PrimaryLighterShade2;
+    if (completedTasksCount >= 2 ) return Colors.PrimaryLighterShade1;
+    return Colors.PrimaryLightestShade;
+  };
+
+  const getMarkedDates = (): MarkedDates => {
+
+    const daysCompletions: { [key: string]: number } = {};
+
+    completedTasks.forEach(task => {
+      if (daysCompletions[task.date]) {
+        daysCompletions[task.date] += 1;
+      } else {
+        daysCompletions[task.date] = 1;
+      }
+    });
+
+    const markedDates = Object.entries(daysCompletions).reduce((acc, [date, count]) => {
+      acc[date] = { selected: true, selectedColor: getDayColor(count) }
+      return acc;
+    }, {} as MarkedDates);
+
+    return markedDates;
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.calendarWrapper}>
       <Calendar
-        style={{
-          height: 320
-        }}
+        theme={{arrowColor: Colors.Primary, todayTextColor: Colors.Primary}}
         onDayPress={(day: any) => handleDayPress(day.dateString)}
-
-        //IMPORTANT: This is just for testing purposes. Remove this code when done testing.
-        markedDates={{
-          '2024-12-05': { selected: true, selectedColor: Colors.Primary },
-          '2024-12-15': { selected: true, selectedColor: Colors.Primary }
-        }}
-
+        markedDates={getMarkedDates()}
       />
+      </View>
 
       <Text style={[styles.title, globalStyles.textColor]}>Completed Tasks History Summary</Text>
     </View>
@@ -71,7 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: Colors.ScreensBackground,
+    backgroundColor: Colors.ScreensBackground
   },
   title: {
     fontSize: 32,
@@ -79,11 +103,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20
   },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
+  calendarWrapper: {
+    marginBottom: 20,
+    borderRadius: 16, 
+    overflow: 'hidden',
+    elevation: 4, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   monthLabel: {
     fontSize: 18,
