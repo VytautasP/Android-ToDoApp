@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import globalStyles from '../style/style'
 import { COMPLETED_TASKS_STORAGE_KEY } from './HomeScreen';
@@ -7,8 +7,10 @@ import { TaskType } from '../models/task';
 import { Calendar } from 'react-native-calendars';
 import { navigate } from '../../App';
 import { Colors } from '../constants/colors';
-import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
 import { MarkedDates } from 'react-native-calendars/src/types';
+import { BarChart } from 'react-native-chart-kit';
+import { ScrollView } from 'react-native-gesture-handler';
+import TileList from '../components/Tile/TileList';
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -77,17 +79,46 @@ const HistoryScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.calendarWrapper}>
-      <Calendar
-        theme={{arrowColor: Colors.Primary, todayTextColor: Colors.Primary}}
-        onDayPress={(day: any) => handleDayPress(day.dateString)}
-        markedDates={getMarkedDates()}
-      />
+    <ScrollView >
+      <View style={styles.container}>
+        <View style={styles.calendarWrapper}>
+          <Calendar
+            theme={{ arrowColor: Colors.Primary, todayTextColor: Colors.Primary }}
+            onDayPress={(day: any) => handleDayPress(day.dateString)}
+            markedDates={getMarkedDates()}
+          />
+        </View>
+        <View style={styles.calendarWrapper}>
+          <TileList items={[
+            { title: 'Tasks Completed', value: completedTasks.length, color: '#eff6ff' },
+            { title: 'Completion rate', value: '75%', color: '#f0fdf4' },
+            { title: 'Most active day', value: '2024-12-05', color: '#faf5ff'},
+            { title: 'Most productive day', value: '2024-12-05', color: '#f9fad7'},
+            { title: 'Longest streek', value: '3 days', color: '#faeade'},
+          ]} 
+          />
+        </View>
+        <View style={styles.calendarWrapper}>
+          <BarChart
+            data={{
+              labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
+              datasets: [{ data: [4, 7, 20, 35, 3] }]
+            }}
+            width={Dimensions.get("window").width - 40}
+            fromZero={true}
+            height={(Dimensions.get("window").height ) / 4}
+            yAxisLabel=""
+            yAxisSuffix=""
+            showValuesOnTopOfBars={true}
+            chartConfig={{
+              backgroundColor: "white",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            }}
+          />
+        </View>
       </View>
-
-      <Text style={[styles.title, globalStyles.textColor]}>Completed Tasks History Summary</Text>
-    </View>
+    </ScrollView>
   );
 };
 
