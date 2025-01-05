@@ -10,7 +10,7 @@ import { Colors } from '../constants/colors';
 import { MarkedDates } from 'react-native-calendars/src/types';
 import { BarChart } from 'react-native-chart-kit';
 import { ScrollView } from 'react-native-gesture-handler';
-import TileList from '../components/Tile/TileList';
+import TileList, { TileItem } from '../components/Tile/TileList';
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -27,7 +27,8 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
 
 const HistoryScreen: React.FC = () => {
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
- 
+  const [completedTasksMap, setCompletedTasksMap] = useState<{ [key: string]: number }>({});
+
   useEffect(() => {
     const fetchCompletedTasks = async () => {
       const loadedCompletedTasks = await loadCompletedTasks();
@@ -35,8 +36,24 @@ const HistoryScreen: React.FC = () => {
     };
 
     fetchCompletedTasks();
-    
+    setCompletedTasksMap(getCompletedTasksMap());
+
   }, []);
+
+  const getCompletedTasksMap = () => {
+
+    const daysCompletions: { [key: string]: number } = {};
+
+    completedTasks.forEach(task => {
+      if (daysCompletions[task.date]) {
+        daysCompletions[task.date] += 1;
+      } else {
+        daysCompletions[task.date] = 1;
+      }
+    });
+
+    return daysCompletions;
+  }
 
   const handleDayPress = (date: string) : void => {
     const tasks = getTasksForSelectedDate(date);
@@ -58,25 +75,88 @@ const HistoryScreen: React.FC = () => {
     return Colors.PrimaryLightestShade;
   };
 
-  const getMarkedDates = (): MarkedDates => {
+  const fetchCompletedTaskCalendarMarks = (): MarkedDates => {
 
-    const daysCompletions: { [key: string]: number } = {};
-
-    completedTasks.forEach(task => {
-      if (daysCompletions[task.date]) {
-        daysCompletions[task.date] += 1;
-      } else {
-        daysCompletions[task.date] = 1;
-      }
-    });
-
-    const markedDates = Object.entries(daysCompletions).reduce((acc, [date, count]) => {
+    const markedDates = Object.entries(completedTasksMap).reduce((acc, [date, count]) => {
       acc[date] = { selected: true, selectedColor: getDayColor(count) }
       return acc;
     }, {} as MarkedDates);
 
     return markedDates;
   }
+
+  const fetchTaskCompletionStats = () : number[] => {
+
+    // calculate weeks from 1 to 5 and add the number of completions for each week
+    //add zero completions for weeks that have no completions
+
+    const weeksCompletions: { [key: number]: number } = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+
+    // Process each date and add its completions to the corresponding week
+    Object.entries(completedTasksMap).forEach(([date, count]) => {
+
+      // Extract the day from the date and calculate the week (1 to 5)
+
+      const day = parseInt(date.split('-')[2], 10);
+      const week = Math.ceil(day / 7);
+
+      if (week >= 1 && week <= 5) {
+        weeksCompletions[week] += count;
+      }
+    });
+
+    return Object.values(weeksCompletions);
+  }
+  
+  const fetchSummaryTiles = (): TileItem[] => {
+
+    const dayInMilliseconds = 86400000;
+    let tasksCompleted = 0
+    let mostProductiveDay = { date: '', count: 0 };
+    let longestStreak = 0;
+    let currentStreak = 0;
+    let previousDate: Date | null = null;
+
+    // Calculate total tasks, most productive day, and longest streak
+    Object.entries(completedTasksMap).forEach(([date, count]) => {
+
+      tasksCompleted += count;
+
+      if (count > mostProductiveDay.count) {
+        mostProductiveDay = { date, count };
+      }
+
+      // Check streak continuity
+      const currentDate = new Date(date);
+
+      if (previousDate && (currentDate.getTime() - previousDate.getTime()) === dayInMilliseconds) {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+
+      // Update longest streak
+      if (currentStreak > longestStreak) {
+        longestStreak = currentStreak;
+      }
+
+      previousDate = currentDate;
+    });
+
+
+    return [
+      { title: 'Tasks Completed', value: completedTasks.length, color: '#eff6ff' },
+      { title: 'Most productive day', value: mostProductiveDay.date, color: '#f9fad7'},
+      { title: 'Longest streek', value: `${longestStreak} ${longestStreak > 1 ? 'days' : 'day'}`, color: '#faeade'}
+    ];
+  }
+
 
   return (
     <ScrollView >
@@ -85,24 +165,17 @@ const HistoryScreen: React.FC = () => {
           <Calendar
             theme={{ arrowColor: Colors.Primary, todayTextColor: Colors.Primary }}
             onDayPress={(day: any) => handleDayPress(day.dateString)}
-            markedDates={getMarkedDates()}
+            markedDates={fetchCompletedTaskCalendarMarks()}
           />
         </View>
         <View style={styles.calendarWrapper}>
-          <TileList items={[
-            { title: 'Tasks Completed', value: completedTasks.length, color: '#eff6ff' },
-            { title: 'Completion rate', value: '75%', color: '#f0fdf4' },
-            { title: 'Most active day', value: '2024-12-05', color: '#faf5ff'},
-            { title: 'Most productive day', value: '2024-12-05', color: '#f9fad7'},
-            { title: 'Longest streek', value: '3 days', color: '#faeade'},
-          ]} 
-          />
+          <TileList items={fetchSummaryTiles()} />
         </View>
         <View style={styles.calendarWrapper}>
           <BarChart
             data={{
               labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-              datasets: [{ data: [4, 7, 20, 35, 3] }]
+              datasets: [{ data: fetchTaskCompletionStats() }]
             }}
             width={Dimensions.get("window").width - 40}
             fromZero={true}
