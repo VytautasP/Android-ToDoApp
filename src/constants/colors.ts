@@ -11,6 +11,7 @@ export const Colors ={
     AlertColor: 'orange',
     TaskContentBackground: '#fff',
     TaskContentBackgroundCompleted: 'white',
+    White: 'white',
     ScreensBackground: '#f5f5f5',
     ActionBarBackground: '#e0e0e0'
 }

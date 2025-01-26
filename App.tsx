@@ -28,6 +28,7 @@ export function navigate(name: string, params: any) {
 const App: React.FC = () => {
 
   const [adLoaded, setAdLoaded] = useState(false)
+  const [reloadHistoryTrigger, setReloadHistoryTrigger] = useState<string>('');
   const [deliveredNotifications, setDeliveredNotifications] = React.useState<string[]>([]);
 
   //const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
@@ -145,16 +146,18 @@ const App: React.FC = () => {
               )
             }}
           >
-            {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} />}
+            {(props) => <HomeScreen {...props} deliveredNotifications={deliveredNotifications} onTaskCompleted={(task) => setReloadHistoryTrigger(task.id)} />}
           </Tab.Screen>
           <Tab.Screen name="History"
-            component={HistoryScreen}
             options={{
               tabBarIcon: ({ focused, color, size }) => (
                 <MaterialCommunityIcons name="history" color={focused ? Colors.Primary : color} size={size} />
               )
-            }}
-          />
+            }} >
+              {(props) => (
+              <HistoryScreen {...props} reloadTrigger={reloadHistoryTrigger} />
+            )}
+          </Tab.Screen>
           <Tab.Screen name="CompletedTasks" options={({ navigation }) => ({
             title: 'Completed tasks',
             tabBarButton: () => null,

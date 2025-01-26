@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, ColorValue } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COMPLETED_TASKS_STORAGE_KEY } from './HomeScreen';
 import { TaskType } from '../models/task';
@@ -7,10 +7,16 @@ import { Calendar } from 'react-native-calendars';
 import { navigate } from '../../App';
 import { Colors } from '../constants/colors';
 import { DateData, MarkedDates } from 'react-native-calendars/src/types';
-import { BarChart } from 'react-native-chart-kit';
+import { BarChart, ruleTypes } from "react-native-gifted-charts";
 import { ScrollView } from 'react-native-gesture-handler';
 import TileList, { TileItem } from '../components/Tile/TileList';
 import { format } from 'date-fns';
+
+interface HistoryScreenProps {
+  reloadTrigger?: string
+}
+
+type barDataType= {value: number, label: string, topColor?: ColorValue, frontColor?: ColorValue, gradientColor?: ColorValue};
 
 const loadCompletedTasks = async (): Promise<TaskType[]> => {
   try {
@@ -25,25 +31,26 @@ const loadCompletedTasks = async (): Promise<TaskType[]> => {
   return [];
 };
 
-const HistoryScreen: React.FC = () => {
+const HistoryScreen: React.FC<HistoryScreenProps> = (props: HistoryScreenProps) => {
+
   const [allCompletedTasks, setAllCompletedTasks] = useState<TaskType[]>([]);
   const [summaryTiles, setSummaryTiles] = useState<TileItem[]>([]);
-  const [barChartData, setBarChartData] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [barChartData, setBarChartData] = useState<barDataType[]>([{value: 0, label: 'Week1'}, {value: 0, label: 'Week2'}, {value: 0, label: 'Week3'},{value: 0, label: 'Week4'}]);
   const [markedDates, setMarkedDates] = useState<MarkedDates>({});
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [maxBarValue, setMaxBarValue] = useState(6);
 
   useEffect(() => {
-
-    console.log('History screen mounted, with date: ', selectedDate);
 
     const fetchData = async () => {
       const completedTasks = await loadCompletedTasks();
       setAllCompletedTasks(completedTasks);
+      console.log('Reloading data...');
     };
-      
+    
     fetchData();
 
-  }, []);
+  }, [props.reloadTrigger]);
   
   const currentMonthTasks = useMemo(() => {
     const currentMonth = selectedDate.getMonth();
@@ -64,8 +71,13 @@ const HistoryScreen: React.FC = () => {
 
   useEffect(() => {
     setMarkedDates(fetchCompletedTaskCalendarMarks(completedTasksMap));
-    setBarChartData(fetchTaskCompletionStats(completedTasksMap));
+    const barChartDataTmp = fetchTaskCompletionStats(completedTasksMap);
+    setBarChartData(barChartDataTmp);
+
     setSummaryTiles(fetchSummaryTiles(completedTasksMap));
+    
+    const maxBarValue = Math.max(...barChartDataTmp.map(data => data.value));
+    setMaxBarValue(maxBarValue < 6 ? 6 : maxBarValue + 2);
   }, [completedTasksMap]);
 
   const handleDayPress = (date: string) : void => {
@@ -98,34 +110,41 @@ const HistoryScreen: React.FC = () => {
     return markedDates;
   }
 
-  const fetchTaskCompletionStats = (completedTasks: {[key:string] : number}) : number[] => {
+  const fetchTaskCompletionStats = (completedTasks: {[key:string] : number}) : barDataType[] => {
 
-    // calculate weeks from 1 to 5 and add the number of completions for each week
-    //add zero completions for weeks that have no completions
+    const totalWeeks = getTotalWeeksInMonth(selectedDate);
+    const weeksCompletions: { [key: number]: number } = {};
 
-    const weeksCompletions: { [key: number]: number } = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-      5: 0,
-      6: 0
-    };
+    for (let i = 1; i <= totalWeeks; i++) {
+      weeksCompletions[i] = 0;
+    }
 
-    // Process each date and add its completions to the corresponding week
     Object.entries(completedTasks).forEach(([date, count]) => {
 
-      // Extract the day from the date and calculate the week (1 to 5)
-
-      const day = parseInt(date.split('-')[2], 10);
-      const week = Math.ceil(day / 7);
+      const week = getWeekOfMonth(new Date(date));
 
       if (week >= 1 && week <= 6) {
-        weeksCompletions[week] += count;
+
+        if (weeksCompletions[week] === undefined) {
+          weeksCompletions[week] = count;
+        }
+        else {
+          weeksCompletions[week] += count;
+        }
       }
     });
 
-    return Object.values(weeksCompletions);
+    let result = Object.values(weeksCompletions).map((v, index) => {
+     let color = getDayColor(v); 
+     return ({
+        value: v, 
+        label: `Week${index + 1}`,
+        topColor: color,
+        frontColor: color,
+        gradientColor: color
+      })
+     });
+    return result;
   }
   
   const fetchSummaryTiles = (completedTasks: {[key:string] : number}): TileItem[] => {
@@ -170,6 +189,29 @@ const HistoryScreen: React.FC = () => {
     ];
   }
 
+  const getWeekOfMonth = (date: Date): number =>{
+    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const firstDayWeekIndex = firstDayOfMonth.getDay();
+    const dayOfMonth = date.getDate();
+    const adjustedDate = dayOfMonth + firstDayWeekIndex;
+  
+    return Math.ceil(adjustedDate / 7);
+  }
+
+  const getTotalWeeksInMonth = (date: Date): number => {
+
+    const year: number = date.getFullYear();
+    const month: number = date.getMonth();
+  
+    const firstDayOfMonth: Date = new Date(year, month, 1);
+    const lastDayOfMonth: Date = new Date(year, month + 1, 0);
+    const firstDayWeekIndex: number = firstDayOfMonth.getDay();
+    const daysInMonth: number = lastDayOfMonth.getDate();
+    const totalWeeks = Math.ceil((firstDayWeekIndex + daysInMonth) / 7);
+  
+    return totalWeeks;
+  }
+
   return (
     <ScrollView >
       <View style={styles.container}>
@@ -185,23 +227,27 @@ const HistoryScreen: React.FC = () => {
         <View style={styles.calendarWrapper}>
           <TileList items={summaryTiles} />
         </View>
-        <View style={styles.calendarWrapper}>
+
+        <View style={[styles.calendarWrapper, { backgroundColor: 'white', paddingTop: 20, paddingBottom: 20, paddingLeft: 10 }]}>
           <BarChart
-            data={{
-              labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
-              datasets: [{ data: barChartData }]
-            }}
-            width={Dimensions.get("window").width - 40}
-            fromZero={true}
-            height={(Dimensions.get("window").height ) / 4}
-            yAxisLabel=""
-            yAxisSuffix=""
-            showValuesOnTopOfBars={true}
-            chartConfig={{
-              backgroundColor: "white",
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            }}
+            width={Dimensions.get("window").width - 100}
+            height={(Dimensions.get("window").height) / 4}
+            maxValue={maxBarValue}
+            showGradient
+            barBorderRadius={4}
+            yAxisThickness={0}
+            initialSpacing={10}
+            spacing={17}
+            endSpacing={0}
+            xAxisType={ruleTypes.DASHED}
+            xAxisColor={'lightgray'}
+            yAxisTextStyle={{ color: '#5c5858' }}
+            xAxisLabelTextStyle={{ color: '#5c5858', textAlign: 'center' }}
+            labelWidth={35}
+            noOfSections={5}
+            data={barChartData}
+            showValuesAsTopLabel
+            isAnimated
           />
         </View>
       </View>

@@ -46,9 +46,10 @@ enum TaskViewType {
 
 interface HomeScreenProps {
   deliveredNotifications: string[];
+  onTaskCompleted: (task: TaskType) => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeScreenProps) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskCompleted }: HomeScreenProps) => {
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
   const [createUpdateTaskModalVisible, setCreateUpdateTaskModalVisible] = useState(false);
@@ -131,7 +132,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications }: HomeS
     const newCompletedTasks = [...completedTasks, completedTask];
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
     setCompletedTasks(newCompletedTasks);
-
+    onTaskCompleted(completedTask)
   };
 
   const deleteTask = async (id: string) : Promise<void> => {
