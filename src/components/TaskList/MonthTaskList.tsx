@@ -76,10 +76,7 @@ const MonthTaskList: React.FC<MonthTaskListProps> = (props: MonthTaskListProps) 
     }, []);
 
     return (
-        <CalendarProvider
-            date={new Date().toDateString()}
-            showTodayButton
-        >
+        <CalendarProvider date={new Date().toDateString()}>
             <View style={styles.calendarWrapper}>
 
                 <ExpandableCalendar
