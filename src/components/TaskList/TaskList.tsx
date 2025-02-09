@@ -4,7 +4,7 @@ import Task from '../Task/Task';
 import { TaskType } from '../../models/task';
 import globalStyles from '../../style/style'
 
-interface TaskListProps {
+interface TaskFullListProps {
     tasks: TaskType[];
     completeTask: (id: string) => void;
     editTask: (task: TaskType) => void;
@@ -13,16 +13,17 @@ interface TaskListProps {
     cancelScheduleTask: (id: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ( props : TaskListProps) => {
+const TaskFullList: React.FC<TaskFullListProps> = ( props : TaskFullListProps) => {
+
     const { tasks, completeTask, editTask, deleteTask, scheduleTask, cancelScheduleTask } = props;
-    const groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
+    let sortedTasks = tasks.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    let groupedTasks = sortedTasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
         return acc;
-      }, {});
+      }, {})
 
     return (
         <>
-            {/* <Text style={[styles.title, globalStyles.textColor]}>To-Do List</Text> */}
             <ScrollView style={styles.scrollView}>
                 {Object.keys(groupedTasks).map((date) => (
                     <View key={date}>
@@ -64,4 +65,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default TaskList;
+export default TaskFullList;

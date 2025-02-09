@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, set } from 'date-fns';
 import { TaskType } from '../models/task';
-import TaskList from '../components/TaskList/TaskList';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import CreateUpdateTaskModal from '../components/CreateUpdateTaskModal/CreateUpdateTaskModal';
 import "react-native-get-random-values";
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
-import SwitchSelector from 'react-native-switch-selector';
-import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Colors } from '../constants/colors';
+import MonthTaskList from '../components/TaskList/MonthTaskList';
 
 export const TASKS_STORAGE_KEY = '@todo-tasks-storage';
 export const COMPLETED_TASKS_STORAGE_KEY = '@todo-completed-tasks-storage';
@@ -38,11 +37,6 @@ export const saveTasks = async (key: string, tasks: TaskType[]) => {
   }
 };
 
-enum TaskViewType {
-  Full = 'Full',
-  Month = 'Month'
-}
-
 
 interface HomeScreenProps {
   deliveredNotifications: string[];
@@ -50,6 +44,7 @@ interface HomeScreenProps {
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskCompleted }: HomeScreenProps) => {
+
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [completedTasks, setCompletedTasks] = useState<TaskType[]>([]);
   const [createUpdateTaskModalVisible, setCreateUpdateTaskModalVisible] = useState(false);
@@ -60,13 +55,22 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
 
       const loadedTasks = await loadTasks(TASKS_STORAGE_KEY);
 
-      setTasks(loadedTasks);
+      setLoadedActiveTasks(loadedTasks);
       const loadedCompletedTasks = await loadTasks(COMPLETED_TASKS_STORAGE_KEY);
-      setCompletedTasks(loadedCompletedTasks);
+      setLoadedCompletedTasks(loadedCompletedTasks);
     };
 
     fetchTasks();
   }, [deliveredNotifications]);
+
+
+  const setLoadedActiveTasks = (tasks: TaskType[]) => {
+     setTasks(tasks);
+  }
+
+  const setLoadedCompletedTasks = (tasks: TaskType[]) => {
+    setCompletedTasks(tasks);
+ }
 
   const onAddTask = (task: TaskType) : void => {
 
@@ -74,7 +78,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
 
     if (task.title.length > 0) {
       const newTasks = [...tasks, task];
-      setTasks(newTasks);
+      setLoadedActiveTasks(newTasks);
       saveTasks(TASKS_STORAGE_KEY, newTasks);
     }
     else {
@@ -114,7 +118,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
     }
 
     saveTasks(TASKS_STORAGE_KEY, tasks);
-    setTasks([...tasks]);
+    setLoadedActiveTasks([...tasks]);
   }
 
   const completeTask = async (id: string) : Promise<void>  => {
@@ -127,11 +131,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
     const completedTask = { ...newTasks[index], completed: true };
     newTasks.splice(index, 1);
     saveTasks(TASKS_STORAGE_KEY, newTasks);
-    setTasks(newTasks);
+    setLoadedActiveTasks(newTasks);
 
     const newCompletedTasks = [...completedTasks, completedTask];
     saveTasks(COMPLETED_TASKS_STORAGE_KEY, newCompletedTasks);
-    setCompletedTasks(newCompletedTasks);
+    setLoadedCompletedTasks(newCompletedTasks);
     onTaskCompleted(completedTask)
   };
 
@@ -144,7 +148,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
     const newTasks = [...tasks];
     newTasks.splice(index, 1);
     saveTasks(TASKS_STORAGE_KEY, newTasks);
-    setTasks(newTasks);
+    setLoadedActiveTasks(newTasks);
 
   };
 
@@ -157,7 +161,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
     task.reminderId = reminderId;
     task.reminderDate = format(date, "yyyy-MM-dd HH:mm:ss");
     saveTasks(TASKS_STORAGE_KEY, tasks);
-    setTasks([...tasks]);
+    setLoadedActiveTasks([...tasks]);
   }
 
   const AddTaskToScheduler = async (task: TaskType, date: Date): Promise<string> => {
@@ -210,7 +214,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
     await cancelTaskNotification(task);
 
     saveTasks(TASKS_STORAGE_KEY, tasks);
-    setTasks([...tasks]);
+    setLoadedActiveTasks([...tasks]);
   }
 
   const cancelTaskNotification = async (task: TaskType) : Promise<void> => {
@@ -224,45 +228,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ deliveredNotifications, onTaskC
   }
 
   return (
-    <GestureHandlerRootView>
-      <View style={styles.container}>
-        <View style={styles.taskViewOptions}>
-          <SwitchSelector
-            options={[
-              { label: "Full", value: TaskViewType.Full },
-              { label: "Month", value: TaskViewType.Month }
-            ]}
-            initial={0}
-            selectedColor={'#FFFFFF'}
-            borderWidth={1}
-            buttonColor={ Colors.Primary }
-            borderColor={ Colors.Primary }
-            hasPadding
-            buttonMargin={2}
-            onPress={value => console.log(`Call onPress with value: ${value}`)}
-          />
-        </View>
+    <View style={styles.container}>
 
-        <TaskList
-          tasks={tasks}
-          completeTask={completeTask}
-          editTask={onEditTask}
-          deleteTask={deleteTask}
-          scheduleTask={scheduleTaskReminder}
-          cancelScheduleTask={cancelScheduleTaskReminder} />
+      <MonthTaskList
+        tasks={tasks}
+        completeTask={completeTask}
+        editTask={onEditTask}
+        deleteTask={deleteTask}
+        scheduleTask={scheduleTaskReminder}
+        cancelScheduleTask={cancelScheduleTaskReminder}
+      />
 
-        <TouchableOpacity style={styles.floatingButton} onPress={() => setCreateUpdateTaskModalVisible(true)}>
-          <Ionicon style={{ width: 60, height: 60}} size={60} name="add-circle" color={Colors.Primary}/>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.floatingButton} onPress={() => setCreateUpdateTaskModalVisible(true)}>
+        <Ionicon style={{ width: 60, height: 60 }} size={60} name="add-circle" color={Colors.Primary} />
+      </TouchableOpacity>
 
-        {/* Modal for adding task */}
-        <CreateUpdateTaskModal
-          isModalVisible={createUpdateTaskModalVisible}
-          onConfirm={onAddTask}
-          onClose={() => setCreateUpdateTaskModalVisible(false)}
-        />
-      </View>
-    </GestureHandlerRootView>
+      {/* Modal for adding task */}
+      <CreateUpdateTaskModal
+        isModalVisible={createUpdateTaskModalVisible}
+        onConfirm={onAddTask}
+        onClose={() => setCreateUpdateTaskModalVisible(false)}
+      />
+
+    </View>
   );
 };
 
@@ -279,6 +267,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 30,
     elevation: 10
+  },
+  calendarWrapper: {
+    marginBottom: 20,
+    borderRadius: 16, 
+    overflow: 'hidden',
+    elevation: 4, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   floatingButton: {
     position: 'absolute',

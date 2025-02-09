@@ -26,8 +26,6 @@ const CompletedTasksScreen : React.FC<CompletedTasksScreenProps> = (props: Compl
     <View style={styles.screenContainer}>
       <Text style={[styles.screenTitle, globalStyles.textColor]}>Tasks for {completionDate}</Text>
       {completedTasks && completedTasks.length > 0 ? (
-
-
         <MasonryList
           data={completedTasks}
           numColumns={2}
@@ -46,12 +44,7 @@ const CompletedTasksScreen : React.FC<CompletedTasksScreenProps> = (props: Compl
           }
           }
           style={{borderRadius: 5}}
-        //refreshing={isLoadingNext}
-        //onRefresh={() => refetch({first: ITEM_CNT})}
-        //onEndReachedThreshold={0.1}
-        //onEndReached={() => loadNext(ITEM_CNT)}
         />
-
       ) : (
         <Text style={[styles.taskText, globalStyles.textColor]}>No tasks completed on this day.</Text>
       )}
