@@ -19,7 +19,8 @@ interface MonthTaskListProps {
 const getAgendaTaskItems = (tasks: TaskType[]): any[] => {
 
     let agendaItems: any[] = [];
-    let groupedTasks = tasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
+    let sortedTasks = tasks.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    let groupedTasks = sortedTasks.reduce((acc: { [key: string]: TaskType[] }, task) => {
         (acc[task.date] = acc[task.date] || []).push(task);
         return acc;
     }, {});
