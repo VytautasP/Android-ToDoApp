@@ -66,7 +66,7 @@ const MonthTaskList: React.FC<MonthTaskListProps> = (props: MonthTaskListProps) 
             scheduleTask={scheduleTask}
             cancelScheduleTask={cancelScheduleTask}
         />
-    }, []);
+    }, [tasks]);
 
     const renderSectionHeaderItem = useCallback((section: any) => {
 
@@ -74,7 +74,7 @@ const MonthTaskList: React.FC<MonthTaskListProps> = (props: MonthTaskListProps) 
             <Text style={styles.sectionHeaderText}>{section as unknown as string}</Text>
         </View>
 
-    }, []);
+    }, [tasks]);
 
     return (
         <CalendarProvider date={new Date().toDateString()}>
