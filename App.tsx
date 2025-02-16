@@ -31,11 +31,10 @@ const App: React.FC = () => {
   const [reloadHistoryTrigger, setReloadHistoryTrigger] = useState<string>('');
   const [deliveredNotifications, setDeliveredNotifications] = React.useState<string[]>([]);
 
-  //const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
+  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : APP_ADMOB_INTERSTITIAL_ID;
 
-  const adUnitId = TestIds.INTERSTITIAL;
-
-  //const adUnitId = 'ca-app-pub-9160717670483486/6469333363';
+  //const adUnitId = TestIds.INTERSTITIAL;
+  //const adUnitId = APP_ADMOB_INTERSTITIAL_ID;
 
   const getAppOpens = async (): Promise<number> => {
 
@@ -84,7 +83,7 @@ const App: React.FC = () => {
 
       let appOpens = await getAppOpens();
       let showAdd = appOpens % AD_SHOW_EVERY_OPEN === 0;
-
+      
       if (showAdd) {
 
         if (adLoaded) {
