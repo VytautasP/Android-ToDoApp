@@ -76,6 +76,9 @@ const MonthTaskList: React.FC<MonthTaskListProps> = (props: MonthTaskListProps) 
 
     }, [tasks]);
 
+    // @ts-ignore fix for defaultProps warning: https://github.com/wix/react-native-calendars/issues/2455
+    ExpandableCalendar.defaultProps = undefined;
+
     return (
         <CalendarProvider date={new Date().toDateString()}>
             <View style={styles.calendarWrapper}>
